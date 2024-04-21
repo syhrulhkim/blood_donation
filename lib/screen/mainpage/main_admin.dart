@@ -1,7 +1,6 @@
 import 'package:blood_donation/models/category.dart';
 import 'package:blood_donation/models/doctor.dart';
 import 'package:blood_donation/screen/mainpage/notification_list.dart';
-// import 'package:flutkit/full_apps/other/medicare/single_doctor_screen.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_container.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
@@ -11,14 +10,14 @@ import 'package:blood_donation/widgets/my_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class MainUser extends StatefulWidget {
-  const MainUser({super.key});
+class MainAdmin extends StatefulWidget {
+  const MainAdmin({super.key});
 
   @override
-  State<MainUser> createState() => _MainUserState();
+  State<MainAdmin> createState() => _MainAdminState();
 }
 
-class _MainUserState extends State<MainUser> {
+class _MainAdminState extends State<MainAdmin> {
   int selectedCategory = 0;
   List<Category> categoryList = [];
   List<Doctor> doctorList = [];
@@ -33,7 +32,7 @@ class _MainUserState extends State<MainUser> {
     categoryList = Category.categoryList();
     doctorList = Doctor.doctorList();
   }
-  
+
   Widget _buildSingleCategory(
       {int? index, String? categoryName, IconData? categoryIcon}) {
     return Padding(

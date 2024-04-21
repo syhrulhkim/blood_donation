@@ -1,5 +1,6 @@
 import 'package:blood_donation/auth/login.dart';
 import 'package:blood_donation/auth/signup.dart';
+import 'package:blood_donation/screen/mainpage/mainpage.dart';
 import 'package:flutter/material.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/theme/custom_theme.dart';
@@ -63,6 +64,29 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
+              Row(
+                children: [
+                  Expanded(
+                      child: MyButton(
+                    elevation: 0,
+                    padding: MySpacing.y(20),
+                    borderRadiusAll: 4,
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                            builder: (context) => MainPage()),
+                      );
+                    },
+                    backgroundColor: customTheme.medicarePrimary,
+                    child: MyText.labelLarge(
+                      "GUEST",
+                      color: customTheme.medicareOnPrimary,
+                      letterSpacing: 0.5,
+                    ),
+                  )),
+                ],
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.004),
               Row(
                 children: [
                   Expanded(

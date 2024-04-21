@@ -1,3 +1,4 @@
+import 'package:blood_donation/auth/nonuser.dart';
 import 'package:blood_donation/models/category.dart';
 import 'package:blood_donation/models/doctor.dart';
 import 'package:blood_donation/screen/mainpage/notification_list.dart';
@@ -11,14 +12,14 @@ import 'package:blood_donation/widgets/my_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class MainUser extends StatefulWidget {
-  const MainUser({super.key});
+class MainGuest extends StatefulWidget {
+  const MainGuest({super.key});
 
   @override
-  State<MainUser> createState() => _MainUserState();
+  State<MainGuest> createState() => _MainGuestState();
 }
 
-class _MainUserState extends State<MainUser> {
+class _MainGuestState extends State<MainGuest> {
   int selectedCategory = 0;
   List<Category> categoryList = [];
   List<Doctor> doctorList = [];
@@ -201,7 +202,7 @@ class _MainUserState extends State<MainUser> {
                 MyContainer(
                   onTap: () {
                     Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-                        builder: (context) => NotificationList()));
+                        builder: (context) => NonUser()));
                   },
                   paddingAll: 4,
                   borderRadiusAll: 4,

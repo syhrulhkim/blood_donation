@@ -1,6 +1,8 @@
 // import 'package:flutkit/full_apps/other/medicare/forgot_password_screen.dart';
 // import 'package:flutkit/full_apps/other/medicare/full_app.dart';
 // import 'package:flutkit/full_apps/other/medicare/registration_screen.dart';
+import 'package:blood_donation/auth/forgotpassword.dart';
+import 'package:blood_donation/auth/signup.dart';
 import 'package:blood_donation/screen/home/home.dart';
 import 'package:blood_donation/screen/mainpage/mainpage.dart';
 import 'package:blood_donation/theme/app_theme.dart';
@@ -141,11 +143,11 @@ class _LoginPageState extends State<LoginPage> {
                 alignment: Alignment.centerRight,
                 child: MyButton.text(
                     onPressed: () {
-                      // Navigator.of(context, rootNavigator: true).push(
-                      //   MaterialPageRoute(
-                      //       builder: (context) =>
-                      //           MediCareForgotPasswordScreen()),
-                      // );
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ForgotPassword()),
+                      );
                     },
                     splashColor: customTheme.medicarePrimary.withAlpha(40),
                     child: MyText.bodySmall("Forgot Password?",
@@ -172,10 +174,10 @@ class _LoginPageState extends State<LoginPage> {
               MySpacing.height(16),
               MyButton.text(
                 onPressed: () {
-                  // Navigator.of(context, rootNavigator: true).push(
-                  //   MaterialPageRoute(
-                  //       builder: (context) => MediCareRegistrationScreen()),
-                  // );
+                  Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(
+                        builder: (context) => SignUpPage()),
+                  );
                 },
                 splashColor: customTheme.medicarePrimary.withAlpha(40),
                 child: MyText.bodySmall("I haven't an account",
