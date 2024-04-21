@@ -28,8 +28,7 @@ class _MainPageState extends State<MainPage> {
   late ThemeData theme;
   late CustomTheme customTheme;
   List<MyBottomNavigationBarItem> items = [];
-  String role = "guest";
-  // String role = "user";
+  String role = "user";
 
   @override
   void initState() {

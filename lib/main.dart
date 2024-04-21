@@ -1,8 +1,10 @@
-import 'package:blood_donation/auth/login.dart';
 import 'package:blood_donation/screen/home/home.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -14,9 +16,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Blood Donation',
-      // theme: ThemeData(
-      //   fontFamily: 'DMSans',
-      // ),
       routes: {
         "/": (content) => Home(),
       }

@@ -1,5 +1,6 @@
 import 'package:blood_donation/models/category.dart';
 import 'package:blood_donation/models/doctor.dart';
+import 'package:blood_donation/models/hospital.dart';
 import 'package:blood_donation/screen/mainpage/notification_list.dart';
 // import 'package:flutkit/full_apps/other/medicare/single_doctor_screen.dart';
 import 'package:blood_donation/theme/app_theme.dart';
@@ -22,6 +23,7 @@ class _MainUserState extends State<MainUser> {
   int selectedCategory = 0;
   List<Category> categoryList = [];
   List<Doctor> doctorList = [];
+  List<Hospital> hospitalList = [];
   late ThemeData theme;
   late CustomTheme customTheme;
 
@@ -96,6 +98,78 @@ class _MainUserState extends State<MainUser> {
       list.add(_buildSingleDoctor(doctorList[i]));
     }
     return list;
+  }
+
+  List<Widget> _buildHospitalList() {
+    List<Widget> list = [];
+
+    list.add(MySpacing.width(16));
+    for (int i = 0; i < hospitalList.length; i++) {
+      list.add(_buildAllHospital(hospitalList[i]));
+    }
+    return list;
+  }
+
+  Widget _buildAllHospital(Hospital doctor) {
+    return MyContainer(
+      onTap: () {
+        // Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+        //     builder: (context) => MediCareSingleDoctorScreen(doctor)));
+      },
+      margin: MySpacing.fromLTRB(24, 0, 24, 16),
+      paddingAll: 16,
+      borderRadiusAll: 8,
+      child: Row(
+        children: [
+          MyContainer(
+            paddingAll: 0,
+            borderRadiusAll: 8,
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+              child: Image(
+                width: 72,
+                height: 72,
+                image: AssetImage(doctor.criticalBloodId),
+              ),
+            ),
+          ),
+          MySpacing.width(16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                MyText.bodyLarge(
+                  doctor.hospitalID,
+                  fontWeight: 600,
+                ),
+                MySpacing.height(4),
+                MyText.bodySmall(
+                  doctor.hospitalID,
+                  xMuted: true,
+                ),
+                MySpacing.height(12),
+                Row(
+                  children: [
+                    // MyStarRating(
+                    //   rating: doctor.criticalBloodId,
+                    //   showInactive: true,
+                    //   size: 15,
+                    //   inactiveColor:
+                    //       theme.colorScheme.onBackground.withAlpha(180),
+                    // ),
+                    MySpacing.width(4),
+                    MyText.bodySmall(
+                      '${doctor.hospitalID} | ${doctor.hospitalID} Reviews',
+                      xMuted: true,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildSingleDoctor(Doctor doctor) {
