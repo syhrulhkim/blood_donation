@@ -1,3 +1,4 @@
+import 'package:blood_donation/api/main_api.dart';
 import 'package:blood_donation/models/category.dart';
 import 'package:blood_donation/models/doctor.dart';
 import 'package:blood_donation/models/hospital.dart';
@@ -34,6 +35,7 @@ class _MainUserState extends State<MainUser> {
     customTheme = AppTheme.customTheme;
     categoryList = Category.categoryList();
     doctorList = Doctor.doctorList();
+    _buildHospitalList();
   }
   
   Widget _buildSingleCategory(
@@ -100,8 +102,11 @@ class _MainUserState extends State<MainUser> {
     return list;
   }
 
-  List<Widget> _buildHospitalList() {
+  Future<List<Widget>> _buildHospitalList() async {
     List<Widget> list = [];
+    MainAPI mainAPI = MainAPI(); // Creating an instance of MainAPI
+    List<Hospital> hospitalList = await mainAPI.allHospital();
+    print("getHospital : $hospitalList");
 
     list.add(MySpacing.width(16));
     for (int i = 0; i < hospitalList.length; i++) {

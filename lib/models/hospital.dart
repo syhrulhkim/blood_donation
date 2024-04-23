@@ -4,15 +4,30 @@ class Hospital {
   final String? id;
   final String hospitalID;
   final String criticalBloodId;
+  final String hospitalAddress;
+  final String hospitalName;
+  final String hospitalContact;
+  final String hospitalImage;
 
   const Hospital ({
     this.id,
     required this.hospitalID,
     required this.criticalBloodId,
+    required this.hospitalAddress,
+    required this.hospitalName,
+    required this.hospitalContact,
+    required this.hospitalImage,
   });
 
   toJson(){
-    return {"hospitalID" : hospitalID, "critical_bloodID": criticalBloodId};
+    return {
+      "hospitalID" : hospitalID,
+      "critical_bloodID": criticalBloodId, 
+      "hospital_Address": hospitalAddress,
+      "hospital_Name": hospitalName, 
+      "hospital_Image": hospitalContact, 
+      "hospital_Contact": hospitalImage, 
+    };
   }
   
 
@@ -21,8 +36,6 @@ class Hospital {
     List<Hospital> list = [];
     final snapshot = await _db.collection("hospital").get();
     final data = snapshot.docs.map((e) => Hospital.fromSnapshot(e)).toList();
-    print("data : $data");
-    print("hospitalList");
     return list;
   }
 
@@ -32,6 +45,10 @@ class Hospital {
       id: document.id,
       hospitalID: data["hospitalID"], 
       criticalBloodId: data["critical_bloodID"],
+      hospitalAddress: data["hospital_Address"],
+      hospitalName: data["hospital_Name"],
+      hospitalContact: data["hospital_Contact"],
+      hospitalImage: data["hospital_Image"],
     );
   }
 }

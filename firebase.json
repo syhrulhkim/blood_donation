@@ -1,1 +1,48 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"blood-donation-d5002","appId":"1:796201942998:android:812c8a7ca8ec72e7f46e77","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"blood-donation-d5002","appId":"1:796201942998:ios:382ce17f3a71a6ddf46e77","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"macos":{"default":{"projectId":"blood-donation-d5002","appId":"1:796201942998:ios:382ce17f3a71a6ddf46e77","uploadDebugSymbols":false,"fileOutput":"macos/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"blood-donation-d5002","configurations":{"android":"1:796201942998:android:812c8a7ca8ec72e7f46e77","ios":"1:796201942998:ios:382ce17f3a71a6ddf46e77","macos":"1:796201942998:ios:382ce17f3a71a6ddf46e77","web":"1:796201942998:web:bf266ef98c192cccf46e77","windows":"1:796201942998:web:5128b4098f5b8257f46e77"}}}}}}
+{
+    "project_info": {
+        "project_number": "796201942998",
+        "project_id": "blood-donation-d5002",
+        "storage_bucket": "blood-donation-d5002.appspot.com"
+    },
+    "client": [
+        {
+            "client_info": {
+            "mobilesdk_app_id": "1:796201942998:android:bf7bb2fd3c31b306f46e77",
+            "android_client_info": {
+                "package_name": "blood.donation"
+            }
+            },
+            "oauth_client": [],
+            "api_key": [
+            {
+                "current_key": "AIzaSyC8jNlQRsFr739O3mmbaa0gWtsmTjvnJSo"
+            }
+            ],
+            "services": {
+            "appinvite_service": {
+                "other_platform_oauth_client": []
+            }
+            }
+        },
+        {
+        "client_info": {
+            "mobilesdk_app_id": "1:796201942998:android:812c8a7ca8ec72e7f46e77",
+            "android_client_info": {
+            "package_name": "com.example.blood_donation"
+            }
+        },
+        "oauth_client": [],
+        "api_key": [
+            {
+            "current_key": "AIzaSyC8jNlQRsFr739O3mmbaa0gWtsmTjvnJSo"
+            }
+        ],
+        "services": {
+            "appinvite_service": {
+            "other_platform_oauth_client": []
+            }
+        }
+        }
+    ],
+    "configuration_version": "1"
+}
