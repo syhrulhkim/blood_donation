@@ -46,4 +46,29 @@ class HospitalAPI {
       throw Exception("Failed to submit hospital data");
     }
   }
+
+  Future<void> updateHospital(Hospital hospital) async {
+    try {
+      // Convert Hospital object to a Map
+      Map<String, dynamic> hospitalData = hospital.toJson();
+
+      // Update the hospital data in the Firestore collection
+      await _db.collection("hospital").doc(hospital.hospitalID).update(hospitalData);
+
+      print("Hospital data updated successfully");
+    } catch (error) {
+      print("Error updating hospital data: $error");
+      throw Exception("Failed to update hospital data");
+    }
+  }
+
+  Future<void> deleteHospital(String hospitalID) async {
+    try {
+      await _db.collection("hospital").doc(hospitalID).delete();
+      print("Hospital deleted successfully");
+    } catch (error) {
+      print("Error deleting hospital: $error");
+      throw Exception("Failed to delete hospital");
+    }
+  }
 }

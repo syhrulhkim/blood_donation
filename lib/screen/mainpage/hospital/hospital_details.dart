@@ -2,7 +2,10 @@
 // import 'package:flutkit/full_apps/other/medicare/models/chat.dart';
 // import 'package:flutkit/full_apps/other/medicare/models/doctor.dart';
 // import 'package:flutkit/full_apps/other/medicare/single_chat_screen.dart';
+import 'package:blood_donation/api/hospital_api.dart';
 import 'package:blood_donation/models/hospital.dart';
+import 'package:blood_donation/screen/mainpage/hospital/hospital_edit.dart';
+import 'package:blood_donation/screen/mainpage/mainpage.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_button.dart';
 import 'package:blood_donation/widgets/my_container.dart';
@@ -30,6 +33,22 @@ class _HospitalDetailsState extends State<HospitalDetails> {
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
     hospital = widget.hospital;
+  }
+
+  deleteHospital(hospitalId) async {
+    try {
+      await HospitalAPI().deleteHospital(hospitalId);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MainPage()),
+      );
+    } catch (error) {
+      print("Failed to delete hospital: $error");
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete hospital')),
+      );
+    }
   }
 
   @override
@@ -210,8 +229,12 @@ class _HospitalDetailsState extends State<HospitalDetails> {
             padding: MySpacing.y(20),
             backgroundColor: AppTheme.customTheme.medicarePrimary,
             onPressed: () {
-              // Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-              //     builder: (context) => MediCareAppointmentScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HospitalEdit(widget.hospital),
+                ),
+              );
             },
             child: MyText.bodyLarge(
               'Edit',
@@ -225,9 +248,8 @@ class _HospitalDetailsState extends State<HospitalDetails> {
             borderRadiusAll: 8,
             padding: MySpacing.y(20),
             backgroundColor: Colors.red[400],
-            onPressed: () {
-              // Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-              //     builder: (context) => MediCareAppointmentScreen()));
+            onPressed: () async {
+              deleteHospital(widget.hospital.hospitalID);
             },
             child: MyText.bodyLarge(
               'Delete',
