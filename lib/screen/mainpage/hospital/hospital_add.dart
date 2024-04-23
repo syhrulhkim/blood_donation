@@ -1,3 +1,6 @@
+import 'package:blood_donation/api/hospital_api.dart';
+import 'package:blood_donation/api/main_api.dart';
+import 'package:blood_donation/models/hospital.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/theme/custom_theme.dart';
 import 'package:blood_donation/widgets/my_button.dart';
@@ -17,12 +20,58 @@ class HospitalAdd extends StatefulWidget {
 class _HospitalAddState extends State<HospitalAdd> {
   late ThemeData theme;
   late CustomTheme customTheme;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late TextEditingController _nameController;
+  late TextEditingController _criticalController;
+  late TextEditingController _addressController;
+  late TextEditingController _contactController;
+  late TextEditingController _imageLinkController;
 
   @override
   void initState() {
     super.initState();
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
+    _nameController = TextEditingController();
+    _criticalController = TextEditingController();
+    _addressController = TextEditingController();
+    _contactController = TextEditingController();
+    _imageLinkController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _criticalController.dispose();
+    _addressController.dispose();
+    _contactController.dispose();
+    _imageLinkController.dispose();
+    super.dispose();
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      // Form is valid, submit data to Firestore
+      Hospital newHospital = Hospital(
+        hospitalID: _nameController.text,
+        criticalBloodId: _criticalController.text, // Replace with actual value
+        hospitalAddress: _addressController.text,
+        hospitalName: _nameController.text,
+        hospitalContact: _contactController.text,
+        hospitalImage: _imageLinkController.text,
+      );
+
+      HospitalAPI().submitHospital(newHospital).then((_) {
+        _formKey.currentState!.reset();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hospital added successfully')),
+        );
+      }).catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to add hospital: $error')),
+        );
+      });
+    }
   }
 
   @override
@@ -54,95 +103,114 @@ class _HospitalAddState extends State<HospitalAdd> {
           Container(
             child: SingleChildScrollView(
               child: Container(
+                height: MediaQuery.of(context).size.height * 0.8,
                 padding: MySpacing.nTop(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.only(
-                          left: 0, right: 20, top: 0, bottom: 12),
-                      child: MyText.titleMedium("Personal", fontWeight: 600),
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: "Hospital Name",
-                        border: theme.inputDecorationTheme.border,
-                        enabledBorder: theme.inputDecorationTheme.border,
-                        focusedBorder: theme.inputDecorationTheme.focusedBorder,
-                        prefixIcon: Icon(LucideIcons.user, size: 24),
+                child: Form(
+                  key: _formKey,
+                  child: ListView(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(
+                            left: 0, right: 20, top: 0, bottom: 12),
+                        child: MyText.titleMedium("Add New Hospital", fontWeight: 600),
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 8),
-                      child: TextFormField(
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: "Hospital Name",
+                          border: theme.inputDecorationTheme.border,
+                          enabledBorder: theme.inputDecorationTheme.border,
+                          focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                          prefixIcon: Icon(LucideIcons.user, size: 24),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter hospital name';
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        controller: _addressController,
                         decoration: InputDecoration(
                           labelText: "Hospital Address",
                           border: theme.inputDecorationTheme.border,
                           enabledBorder: theme.inputDecorationTheme.border,
-                          focusedBorder:
-                              theme.inputDecorationTheme.focusedBorder,
+                          focusedBorder: theme.inputDecorationTheme.focusedBorder,
                           prefixIcon: Icon(LucideIcons.home, size: 24),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter hospital address';
+                          }
+                          return null;
+                        },
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 8),
-                      child: TextFormField(
+                      TextFormField(
+                        controller: _contactController,
                         decoration: InputDecoration(
                           labelText: "Hospital Contact",
                           border: theme.inputDecorationTheme.border,
                           enabledBorder: theme.inputDecorationTheme.border,
-                          focusedBorder:
-                              theme.inputDecorationTheme.focusedBorder,
+                          focusedBorder: theme.inputDecorationTheme.focusedBorder,
                           prefixIcon: Icon(LucideIcons.contact2, size: 24),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter hospital contact';
+                          }
+                          return null;
+                        },
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 8),
-                      child: TextFormField(
+                      TextFormField(
+                        controller: _imageLinkController,
                         decoration: InputDecoration(
                           labelText: "Hospital Image Link",
                           border: theme.inputDecorationTheme.border,
                           enabledBorder: theme.inputDecorationTheme.border,
-                          focusedBorder:
-                              theme.inputDecorationTheme.focusedBorder,
+                          focusedBorder: theme.inputDecorationTheme.focusedBorder,
                           prefixIcon: Icon(LucideIcons.image, size: 24),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter hospital image link';
+                          }
+                          return null;
+                        },
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20),
-                      alignment: Alignment.center,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: theme.colorScheme.primary.withAlpha(28),
-                              blurRadius: 4,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
+                      TextFormField(
+                        controller: _criticalController,
+                        decoration: InputDecoration(
+                          labelText: "Hospital Critical Blood",
+                          border: theme.inputDecorationTheme.border,
+                          enabledBorder: theme.inputDecorationTheme.border,
+                          focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                          prefixIcon: Icon(LucideIcons.plus, size: 24),
                         ),
-                        child: MyButton.block(
-                          elevation: 0,
-                          borderRadiusAll: 8,
-                          padding: MySpacing.y(20),
-                          backgroundColor: AppTheme.customTheme.medicarePrimary,
-                          onPressed: () {
-                            // Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-                            //     builder: (context) => MediCareAppointmentScreen()));
-                          },
-                          child: MyText.bodyLarge(
-                            'Submit',
-                            color: AppTheme.customTheme.medicareOnPrimary,
-                            fontWeight: 600,
-                          ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter hospital critical blood';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      MyButton.block(
+                        elevation: 0,
+                        borderRadiusAll: 8,
+                        padding: MySpacing.y(20),
+                        backgroundColor: AppTheme.customTheme.medicarePrimary,
+                        onPressed: () {
+                          _submitForm();
+                        },
+                        child: MyText.bodyLarge(
+                          'Submit',
+                          color: AppTheme.customTheme.medicareOnPrimary,
+                          fontWeight: 600,
                         ),
                       ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
