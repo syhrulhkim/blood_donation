@@ -45,8 +45,8 @@ class Hospital {
       "critical_bloodID": criticalBloodId,
       "hospital_Address": hospitalAddress,
       "hospital_Name": hospitalName,
-      "hospital_Image": hospitalContact,
-      "hospital_Contact": hospitalImage,
+      "hospital_Image": hospitalImage,
+      "hospital_Contact": hospitalContact,
     };
   }
 

@@ -66,8 +66,8 @@ class _HospitalEditState extends State<HospitalEdit> {
       hospitalID: widget.hospital.hospitalID, // Keep the existing hospital ID
       hospitalName: name,
       hospitalAddress: address,
-      hospitalContact: imageLink, // Fix this line
-      hospitalImage: contact, // Fix this line
+      hospitalContact: contact,
+      hospitalImage: imageLink,
       criticalBloodId: criticalBlood,
     );
 

@@ -1,6 +1,7 @@
 import 'package:blood_donation/api/hospital_api.dart';
 import 'package:blood_donation/api/main_api.dart';
 import 'package:blood_donation/models/hospital.dart';
+import 'package:blood_donation/screen/mainpage/mainpage.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/theme/custom_theme.dart';
 import 'package:blood_donation/widgets/my_button.dart';
@@ -54,7 +55,7 @@ class _HospitalAddState extends State<HospitalAdd> {
       // Form is valid, submit data to Firestore
       Hospital newHospital = Hospital(
         hospitalID: _nameController.text,
-        criticalBloodId: _criticalController.text, // Replace with actual value
+        criticalBloodId: _criticalController.text,
         hospitalAddress: _addressController.text,
         hospitalName: _nameController.text,
         hospitalContact: _contactController.text,
@@ -65,6 +66,10 @@ class _HospitalAddState extends State<HospitalAdd> {
         _formKey.currentState!.reset();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Hospital added successfully')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainPage()),
         );
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
