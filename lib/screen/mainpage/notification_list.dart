@@ -188,9 +188,9 @@ class _NotificationListState extends State<NotificationList> {
             autofocus: false,
           ),
           MySpacing.height(20),
-          Column(
-            children: _buildChatList(),
-          ),
+          // Column(
+          //   children: _buildChatList(),
+          // ),
         ],
       ),
     );
