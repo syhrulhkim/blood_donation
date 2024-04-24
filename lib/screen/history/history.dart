@@ -151,9 +151,9 @@ class _HistoryState extends State<History> {
             fontWeight: 700,
           ),
           MySpacing.height(16),
-          Column(
-            children: _buildUpcomingList(),
-          ),
+          // Column(
+          //   children: _buildUpcomingList(),
+          // ),
           MySpacing.height(24),
           MyText.titleMedium(
             'Completed Events',
@@ -161,9 +161,9 @@ class _HistoryState extends State<History> {
             letterSpacing: 0.5,
           ),
           MySpacing.height(16),
-          Column(
-            children: _buildCompletedList(),
-          ),
+          // Column(
+          //   children: _buildCompletedList(),
+          // ),
         ],
       ),
     );

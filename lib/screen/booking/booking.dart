@@ -228,9 +228,9 @@ class _BookingState extends State<Booking> {
             fontWeight: 700,
           ),
           MySpacing.height(16),
-          Column(
-            children: _buildDoctorList(),
-          ),
+          // Column(
+          //   children: _buildDoctorList(),
+          // ),
         ],
       ),
     );

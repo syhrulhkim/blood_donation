@@ -92,12 +92,12 @@ class _ProfileState extends State<Profile> {
                 child: Container(),
               ),
               MySpacing.width(6),
-              MyText.bodySmall(
-                'Premium (9 days)',
-                color: customTheme.medicarePrimary,
-                muted: true,
-                textAlign: TextAlign.center,
-              ),
+              // MyText.bodySmall(
+              //   'Premium (9 days)',
+              //   color: customTheme.medicarePrimary,
+              //   muted: true,
+              //   textAlign: TextAlign.center,
+              // ),
             ],
           ),
           MySpacing.height(24),

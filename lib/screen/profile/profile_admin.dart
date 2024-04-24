@@ -93,7 +93,7 @@ class _ProfileAdminState extends State<ProfileAdmin> {
               ),
               MySpacing.width(6),
               MyText.bodySmall(
-                'Premium (9 days)',
+                'Online',
                 color: customTheme.medicarePrimary,
                 muted: true,
                 textAlign: TextAlign.center,
@@ -106,11 +106,11 @@ class _ProfileAdminState extends State<ProfileAdmin> {
             color: theme.colorScheme.onBackground,
             xMuted: true,
           ),
-          MySpacing.height(24),
-          _buildSingleRow(
-              title: 'Subscription & payment', icon: LucideIcons.creditCard),
+          // MySpacing.height(24),
+          // _buildSingleRow(
+          //     title: 'Subscription & payment', icon: LucideIcons.creditCard),
           MySpacing.height(8),
-          Divider(),
+          // Divider(),
           MySpacing.height(8),
           _buildSingleRow(title: 'Profile settings', icon: LucideIcons.user),
           MySpacing.height(8),
