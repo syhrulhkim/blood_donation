@@ -1,6 +1,7 @@
 // import 'package:flutkit/full_apps/other/medicare/forgot_password_screen.dart';
 // import 'package:flutkit/full_apps/other/medicare/full_app.dart';
 // import 'package:flutkit/full_apps/other/medicare/login_screen.dart';
+import 'package:blood_donation/api/signup_api.dart';
 import 'package:blood_donation/auth/forgotpassword.dart';
 import 'package:blood_donation/auth/login.dart';
 import 'package:blood_donation/screen/home/home.dart';
@@ -22,13 +23,32 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   late ThemeData theme;
   late CustomTheme customTheme;
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+  }
+
+  void signUp(String email, String password) async {
+    SignUpApi signUpAPI = SignUpApi();
+    try {
+      await signUpAPI.signUpAPI(email, password);
+    } catch (e) {
+      print('Error signing up: $e');
+    }
   }
 
   @override
@@ -40,6 +60,7 @@ class _SignUpPageState extends State<SignUpPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextFormField(
+              controller: nameController,
               decoration: InputDecoration(
                 filled: true,
                 labelText: "Name",
@@ -89,6 +110,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             MySpacing.height(24),
             TextFormField(
+              controller: emailController,
               decoration: InputDecoration(
                 filled: true,
                 labelText: "Email Address",
@@ -138,6 +160,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             MySpacing.height(24),
             TextFormField(
+              controller: passwordController,
               decoration: InputDecoration(
                 filled: true,
                 labelText: "Password",
@@ -206,9 +229,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 elevation: 0,
                 padding: MySpacing.y(20),
                 onPressed: () {
-                  Navigator.of(context, rootNavigator: true).push(
-                    MaterialPageRoute(builder: (context) => MainUser()),
-                  );
+                  signUp(emailController.text, passwordController.text);
                 },
                 backgroundColor: customTheme.medicarePrimary,
                 child: MyText.bodyLarge(
