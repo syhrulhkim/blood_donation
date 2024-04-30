@@ -1,17 +1,20 @@
 // import 'package:flutkit/full_apps/other/medicare/forgot_password_screen.dart';
 // import 'package:flutkit/full_apps/other/medicare/full_app.dart';
 // import 'package:flutkit/full_apps/other/medicare/registration_screen.dart';
+import 'package:blood_donation/api/login_api.dart';
 import 'package:blood_donation/auth/forgotpassword.dart';
 import 'package:blood_donation/auth/signup.dart';
-import 'package:blood_donation/screen/home/home.dart';
+// import 'package:blood_donation/screen/home/home.dart';
 import 'package:blood_donation/screen/mainpage/mainpage.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_button.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
 import 'package:blood_donation/widgets/my_text.dart';
 import 'package:blood_donation/widgets/my_text_style.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,13 +26,41 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late ThemeData theme;
   late CustomTheme customTheme;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _passwordVisible = false;
 
   @override
   void initState() {
     super.initState();
-
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
+  }
+
+  Future<void> _submitForm() async {
+    LoginApi loginAPI = LoginApi();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('userEmail', email);
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+            builder: (context) => MainPage()),
+      );
+    } catch (e) {
+      print('Login failed: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Email or password is incorrect. Please try again'),
+        ),
+      );
+    }
   }
   
   @override
@@ -42,6 +73,7 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   filled: true,
                   labelText: "Email Address",
@@ -91,7 +123,23 @@ class _LoginPageState extends State<LoginPage> {
               ),
               MySpacing.height(24),
               TextFormField(
+                controller: _passwordController,
+                obscureText: !_passwordVisible,
                 decoration: InputDecoration(
+                  prefixIconColor: customTheme.medicarePrimary,
+                  focusColor: customTheme.medicarePrimary,
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                      color: Theme.of(context).dividerColor,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _passwordVisible = !_passwordVisible;
+                      });
+                    },
+                  ),
                   filled: true,
                   labelText: "Password",
                   hintText: "Password",
@@ -131,9 +179,6 @@ class _LoginPageState extends State<LoginPage> {
                     LucideIcons.lock,
                     size: 20,
                   ),
-                  prefixIconColor: customTheme.medicarePrimary,
-                  focusColor: customTheme.medicarePrimary,
-                  floatingLabelBehavior: FloatingLabelBehavior.never,
                 ),
                 cursorColor: customTheme.medicarePrimary,
                 autofocus: true,
@@ -159,9 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                 elevation: 0,
                 padding: MySpacing.y(20),
                 onPressed: () {
-                  Navigator.of(context, rootNavigator: true).push(
-                    MaterialPageRoute(builder: (context) => MainPage()),
-                  );
+                  _submitForm();
                 },
                 backgroundColor: customTheme.medicarePrimary,
                 child: MyText.labelMedium(

@@ -26,6 +26,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool _passwordVisible = false;
 
   @override
   void initState() {
@@ -42,12 +43,20 @@ class _SignUpPageState extends State<SignUpPage> {
     passwordController.dispose();
   }
 
-  void signUp(String email, String password) async {
+  void signUp(String name, String email, String password) async {
     SignUpApi signUpAPI = SignUpApi();
     try {
-      await signUpAPI.signUpAPI(email, password);
+      print("signUP");
+      await signUpAPI.signUpAPI(name, email, password);
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+            builder: (context) => LoginPage()),
+      );
     } catch (e) {
       print('Error signing up: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to sign-up: $e')),
+      );
     }
   }
 
@@ -161,6 +170,7 @@ class _SignUpPageState extends State<SignUpPage> {
             MySpacing.height(24),
             TextFormField(
               controller: passwordController,
+              obscureText: !_passwordVisible, // Hides the password
               decoration: InputDecoration(
                 filled: true,
                 labelText: "Password",
@@ -204,6 +214,17 @@ class _SignUpPageState extends State<SignUpPage> {
                 prefixIconColor: customTheme.medicarePrimary,
                 focusColor: customTheme.medicarePrimary,
                 floatingLabelBehavior: FloatingLabelBehavior.never,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                    color: Theme.of(context).dividerColor,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _passwordVisible = !_passwordVisible;
+                    });
+                  },
+                ),
               ),
               cursorColor: customTheme.medicarePrimary,
               autofocus: true,
@@ -229,7 +250,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 elevation: 0,
                 padding: MySpacing.y(20),
                 onPressed: () {
-                  signUp(emailController.text, passwordController.text);
+                  signUp(nameController.text, emailController.text, passwordController.text);
                 },
                 backgroundColor: customTheme.medicarePrimary,
                 child: MyText.bodyLarge(

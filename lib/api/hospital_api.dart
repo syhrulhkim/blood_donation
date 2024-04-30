@@ -9,7 +9,6 @@ class HospitalAPI {
       // Query the Firestore collection to get the latest document
       QuerySnapshot<Map<String, dynamic>> snapshot =
           await _db.collection("hospital").orderBy("hospitalID", descending: true).limit(1).get();
-
       // Extract the ID of the latest document
       if (snapshot.docs.isNotEmpty) {
         String latestID = snapshot.docs.first.data()["hospitalID"];
@@ -32,13 +31,9 @@ class HospitalAPI {
     try {
       String nextHospitalID = await getNextHospitalID(); // Get the next hospital ID
       hospital = hospital.copyWith(hospitalID: nextHospitalID); // Update hospital object with the new ID
-
-      // Convert Hospital object to a Map
       Map<String, dynamic> hospitalData = hospital.toJson();
-
       // Add the hospital data to a document named after the hospitalID within the "hospitals" collection
       await _db.collection("hospital").doc(nextHospitalID).set(hospitalData);
-
       print("Hospital data submitted successfully");
     } catch (error) {
       print("Error submitting hospital data: $error");
@@ -50,10 +45,8 @@ class HospitalAPI {
     try {
       // Convert Hospital object to a Map
       Map<String, dynamic> hospitalData = hospital.toJson();
-
       // Update the hospital data in the Firestore collection
       await _db.collection("hospital").doc(hospital.hospitalID).update(hospitalData);
-
       print("Hospital data updated successfully");
     } catch (error) {
       print("Error updating hospital data: $error");
