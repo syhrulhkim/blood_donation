@@ -1,6 +1,8 @@
 // import 'package:flutkit/full_apps/other/medicare/forgot_password_screen.dart';
 // import 'package:flutkit/full_apps/other/medicare/full_app.dart';
 // import 'package:flutkit/full_apps/other/medicare/registration_screen.dart';
+import 'dart:convert';
+
 import 'package:blood_donation/api/login_api.dart';
 import 'package:blood_donation/auth/forgotpassword.dart';
 import 'package:blood_donation/auth/signup.dart';
@@ -11,6 +13,7 @@ import 'package:blood_donation/widgets/my_button.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
 import 'package:blood_donation/widgets/my_text.dart';
 import 'package:blood_donation/widgets/my_text_style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -24,11 +27,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final LoginApi loginApi = LoginApi();
   late ThemeData theme;
   late CustomTheme customTheme;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _passwordVisible = false;
+  var user;
 
   @override
   void initState() {
@@ -38,21 +43,23 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _submitForm() async {
-    LoginApi loginAPI = LoginApi();
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
-
     try {
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('userEmail', email);
-      Navigator.of(context, rootNavigator: true).push(
-        MaterialPageRoute(
-            builder: (context) => MainPage()),
-      );
+      String? userEmail = userCredential.user?.email;
+      var userDataObject = await loginApi.findUserByEmail(userEmail!);
+      if (userDataObject is Map<String, dynamic>) {
+        var userData = userDataObject as Map<String, dynamic>;
+        if (userData != null) {
+          await _storeUserData(userData);
+        }
+      } else {
+        print('Error: Unexpected user data format');
+      }
     } catch (e) {
       print('Login failed: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -62,6 +69,37 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
+
+
+  Future<void> _storeUserData(Map<String, dynamic> userData) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Convert DateTime fields to string representations
+      String? dobString = userData['donor_DOB'] != null ? userData['donor_DOB'].toString() : null;
+      String? latestDonateString = userData['donor_LatestDonate'] != null ? userData['donor_LatestDonate'].toString() : null;
+
+      // Update userData map with string representations
+      Map<String, dynamic> userDataString = Map<String, dynamic>.from(userData);
+      if (dobString != null) userDataString['donor_DOB'] = dobString;
+      if (latestDonateString != null) userDataString['donor_LatestDonate'] = latestDonateString;
+
+      // Convert userData map to JSON string
+      String userDataJson = json.encode(userDataString);
+
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+            builder: (context) => MainPage()),
+      );
+
+      // Store JSON string in SharedPreferences
+      await prefs.setString('userData', userDataJson);
+      print('User data stored in SharedPreferences');
+    } catch (e) {
+      print('Error storing user data: $e');
+    }
+  }
+
   
   @override
   Widget build(BuildContext context) {

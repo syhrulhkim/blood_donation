@@ -40,11 +40,6 @@ class CustomTheme {
 
   final Color lightBlack, violet, indigo;
 
-  final Color estatePrimary,
-      estateOnPrimary,
-      estateSecondary,
-      estateOnSecondary;
-
   final Color datingPrimary,
       datingOnPrimary,
       datingSecondary,
@@ -108,14 +103,8 @@ class CustomTheme {
     this.violet = const Color(0xff9400D3),
 
     //Medicare Color Scheme
-    this.medicarePrimary = const Color(0xff6d65df),
+    this.medicarePrimary = const Color(0xFFDF6565),
     this.medicareOnPrimary = const Color(0xffffffff),
-
-    //Estate Color Scheme
-    this.estatePrimary = const Color(0xff1c8c8c),
-    this.estateOnPrimary = const Color(0xffffffff),
-    this.estateSecondary = const Color(0xfff15f5f),
-    this.estateOnSecondary = const Color(0xffffffff),
 
     //Dating Color Scheme
     this.datingPrimary = const Color(0xffB428C3),

@@ -289,7 +289,7 @@ class _MainGuestState extends State<MainGuest> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 MyText.bodyMedium(
-                  'Upcoming Schedule',
+                  'Guest Dashboard',
                   fontWeight: 700,
                 ),
                 MyText.bodySmall(

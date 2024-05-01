@@ -367,7 +367,7 @@ class _MainUserState extends State<MainUser> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 MyText.bodyMedium(
-                  'Upcoming Schedule',
+                  'User Dashboard',
                   fontWeight: 700,
                 ),
                 MyText.bodySmall(

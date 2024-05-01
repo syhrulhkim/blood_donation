@@ -8,8 +8,8 @@ class MainAPI {
   Future<List<Hospital>> allHospital() async {
     final snapshot = await _db.collection("hospital").get();
     final data = snapshot.docs.map((e) => Hospital.fromSnapshot(e)).toList();
-    final jsonData = data.map((hospital) => json.encode(hospital)).toList();
-    print("data : $jsonData");
+    // final jsonData = data.map((hospital) => json.encode(hospital)).toList();
+    // print("data : $jsonData");
     return data;
   }
 }
