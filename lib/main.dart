@@ -1,25 +1,42 @@
+import 'package:blood_donation/auth/login.dart';
 import 'package:blood_donation/screen/home/home.dart';
+import 'package:blood_donation/screen/mainpage/mainpage.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await FirebaseAppCheck.instance.activate();
-  runApp(const MyApp());
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? userDataJson = prefs.getString('userData');
+
+  Widget initialRoute;
+  if (userDataJson != null) {
+    initialRoute = const MainPage();
+  } else {
+    initialRoute = const LoginPage();
+  }
+
+  runApp(MyApp(initialRoute: initialRoute));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Widget initialRoute;
+
+  const MyApp({required this.initialRoute, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Blood Donation',
+      initialRoute: '/',
       routes: {
-        "/": (content) => Home(),
+        '/': (content) => initialRoute,
       }
     );
   }

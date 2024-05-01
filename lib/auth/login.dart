@@ -74,11 +74,9 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _storeUserData(Map<String, dynamic> userData) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-
       // Convert DateTime fields to string representations
       String? dobString = userData['donor_DOB'] != null ? userData['donor_DOB'].toString() : null;
       String? latestDonateString = userData['donor_LatestDonate'] != null ? userData['donor_LatestDonate'].toString() : null;
-
       // Update userData map with string representations
       Map<String, dynamic> userDataString = Map<String, dynamic>.from(userData);
       if (dobString != null) userDataString['donor_DOB'] = dobString;
@@ -86,7 +84,6 @@ class _LoginPageState extends State<LoginPage> {
 
       // Convert userData map to JSON string
       String userDataJson = json.encode(userDataString);
-
       Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
             builder: (context) => MainPage()),

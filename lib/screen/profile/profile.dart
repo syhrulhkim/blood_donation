@@ -1,9 +1,13 @@
+import 'package:blood_donation/auth/login.dart';
 import 'package:blood_donation/theme/app_theme.dart';
+import 'package:blood_donation/widgets/my_button.dart';
 import 'package:blood_donation/widgets/my_container.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
 import 'package:blood_donation/widgets/my_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -21,6 +25,19 @@ class _ProfileState extends State<Profile> {
     super.initState();
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
+  }
+
+  Future<void> removeUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('userData');
+  }
+
+  void _logOut() async {
+    await removeUserData();
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute(
+          builder: (context) => LoginPage()),
+    );
   }
 
   Widget _buildSingleRow({String? title, IconData? icon}) {
@@ -92,12 +109,12 @@ class _ProfileState extends State<Profile> {
                 child: Container(),
               ),
               MySpacing.width(6),
-              // MyText.bodySmall(
-              //   'Premium (9 days)',
-              //   color: customTheme.medicarePrimary,
-              //   muted: true,
-              //   textAlign: TextAlign.center,
-              // ),
+              MyText.bodySmall(
+                'Online',
+                color: customTheme.medicarePrimary,
+                muted: true,
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
           MySpacing.height(24),
@@ -124,7 +141,14 @@ class _ProfileState extends State<Profile> {
           MySpacing.height(8),
           Divider(),
           MySpacing.height(8),
-          _buildSingleRow(title: 'Logout', icon: LucideIcons.logOut),
+          Container(
+            child: GestureDetector(
+              onTap: () {
+                _logOut();
+              },
+              child: _buildSingleRow(title: 'Logout', icon: LucideIcons.logOut),
+            )
+          ),
         ],
       ),
     );
