@@ -1,17 +1,19 @@
+import 'dart:convert';
+
 import 'package:blood_donation/api/main_api.dart';
-import 'package:blood_donation/models/category.dart';
-import 'package:blood_donation/models/doctor.dart';
 import 'package:blood_donation/models/hospital.dart';
+import 'package:blood_donation/models/user.dart';
+import 'package:blood_donation/screen/mainpage/hospital/hospital_details.dart';
 import 'package:blood_donation/screen/mainpage/notification_list.dart';
 // import 'package:flutkit/full_apps/other/medicare/single_doctor_screen.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_container.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
-import 'package:blood_donation/widgets/my_star_rating.dart';
 import 'package:blood_donation/widgets/my_text.dart';
 import 'package:blood_donation/widgets/my_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainUser extends StatefulWidget {
   const MainUser({super.key});
@@ -22,225 +24,179 @@ class MainUser extends StatefulWidget {
 
 class _MainUserState extends State<MainUser> {
   int selectedCategory = 0;
-  List<Category> categoryList = [];
-  List<Doctor> doctorList = [];
-  List<Hospital> hospitalList = [];
   late ThemeData theme;
   late CustomTheme customTheme;
+  List<Hospital> hospitalList = [];
+  late User? userData;
 
   @override
   void initState() {
     super.initState();
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
-    categoryList = Category.categoryList();
-    doctorList = Doctor.doctorList();
     _buildHospitalList();
-  }
-  
-  Widget _buildSingleCategory(
-      {int? index, String? categoryName, IconData? categoryIcon}) {
-    return Padding(
-      padding: MySpacing.right(16),
-      child: MyContainer(
-        paddingAll: 8,
-        borderRadiusAll: 8,
-        bordered: true,
-        border: Border.all(color: customTheme.border, width: 1),
-        color: selectedCategory == index
-            ? customTheme.card
-            : theme.scaffoldBackgroundColor,
-        onTap: () {
-          setState(() {
-            selectedCategory = index!;
-          });
-        },
-        child: Row(
-          children: [
-            MyContainer.rounded(
-              color: theme.colorScheme.onBackground.withAlpha(16),
-              paddingAll: 4,
-              child: Icon(
-                categoryIcon,
-                color: customTheme.medicarePrimary,
-                size: 16,
-              ),
-            ),
-            MySpacing.width(8),
-            MyText.labelMedium(
-              categoryName!,
-              fontWeight: 600,
-            ),
-          ],
-        ),
-      ),
-    );
+    _getUser();
   }
 
-  List<Widget> _buildCategoryList() {
-    List<Widget> list = [];
+  _buildHospitalList() async {
+    MainAPI mainAPI = MainAPI();
+    List<Hospital> list = await mainAPI.allHospital();
+    setState(() {
+      hospitalList = list;
+    });
+  }
 
-    list.add(MySpacing.width(24));
-
-    for (int i = 0; i < categoryList.length; i++) {
-      list.add(_buildSingleCategory(
-          index: i,
-          categoryName: categoryList[i].category,
-          categoryIcon: categoryList[i].categoryIcon));
+  _getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userDataJson = prefs.getString('userData');
+    if(userDataJson != null) {
+      Map<String, dynamic> decodedData = json.decode(userDataJson);
+      setState(() {
+        userData = User(
+          id: decodedData['id'],
+          donorID: decodedData['donorID'],
+          donorAddress: decodedData['donor_Address'],
+          donorContact: decodedData['donor_Contact'],
+          donorDOB: decodedData['donor_DOB'],
+          donorEligibility: decodedData['donor_Eligibility'],
+          donorEmail: decodedData['donor_Email'],
+          donorGender: decodedData['donor_Gender'],
+          donorHealth: decodedData['donor_Health'],
+          donorLatestDonate: decodedData['donor_LatestDonate'],
+          donorName: decodedData['donor_Name'],
+          donorPostcode: decodedData['donor_Postcode'],
+          donorRole: decodedData['donor_Role'],
+          donorType: decodedData['donor_Type'],
+          donorUsername: decodedData['donor_Username'],
+          donorWeight: decodedData['donor_Weight'],
+        );
+      });
     }
-    return list;
   }
 
-  List<Widget> _buildDoctorList() {
-    List<Widget> list = [];
-
-    list.add(MySpacing.width(16));
-
-    for (int i = 0; i < doctorList.length; i++) {
-      list.add(_buildSingleDoctor(doctorList[i]));
-    }
-    return list;
-  }
-
-  Future<List<Widget>> _buildHospitalList() async {
-    List<Widget> list = [];
-    MainAPI mainAPI = MainAPI(); // Creating an instance of MainAPI
-    List<Hospital> hospitalList = await mainAPI.allHospital();
-    print("getHospital : $hospitalList");
-
-    list.add(MySpacing.width(16));
-    for (int i = 0; i < hospitalList.length; i++) {
-      list.add(_buildAllHospital(hospitalList[i]));
-    }
-    return list;
-  }
-
-  Widget _buildAllHospital(Hospital doctor) {
-    return MyContainer(
-      onTap: () {
-        // Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-        //     builder: (context) => MediCareSingleDoctorScreen(doctor)));
-      },
-      margin: MySpacing.fromLTRB(24, 0, 24, 16),
-      paddingAll: 16,
-      borderRadiusAll: 8,
-      child: Row(
+  Widget _buildAllHospital() {
+    if (hospitalList.isEmpty) {
+      return const Column(
         children: [
-          MyContainer(
-            paddingAll: 0,
+          CircularProgressIndicator(),
+        ],
+      );
+    } else {
+      return Column(
+        children: List.generate(hospitalList.length, (index) {
+          final hospList = hospitalList[index];
+          return MyContainer(
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+                  builder: (context) => HospitalDetails(hospList, userData!)));
+            },
+            margin: MySpacing.fromLTRB(24, 0, 24, 16),
+            paddingAll: 16,
             borderRadiusAll: 8,
-            child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-              child: Image(
-                width: 72,
-                height: 72,
-                image: AssetImage(doctor.criticalBloodId),
-              ),
-            ),
-          ),
-          MySpacing.width(16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                MyText.bodyLarge(
-                  doctor.hospitalID,
-                  fontWeight: 600,
-                ),
-                MySpacing.height(4),
-                MyText.bodySmall(
-                  doctor.hospitalID,
-                  xMuted: true,
-                ),
-                MySpacing.height(12),
-                Row(
-                  children: [
-                    // MyStarRating(
-                    //   rating: doctor.criticalBloodId,
-                    //   showInactive: true,
-                    //   size: 15,
-                    //   inactiveColor:
-                    //       theme.colorScheme.onBackground.withAlpha(180),
-                    // ),
-                    MySpacing.width(4),
-                    MyText.bodySmall(
-                      '${doctor.hospitalID} | ${doctor.hospitalID} Reviews',
-                      xMuted: true,
+                MyContainer(
+                  paddingAll: 0,
+                  borderRadiusAll: 8,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                    child: Image.network(
+                      hospList.hospitalImage,
+                      width: 72,
+                      height: 72,
+                      fit: BoxFit.cover,
                     ),
-                  ],
+                  ),
+                ),
+                MySpacing.width(16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      MyText.bodyLarge(
+                        hospList.hospitalName,
+                        fontWeight: 600,
+                      ),
+                      MySpacing.height(4),
+                      MyText.bodySmall(
+                        hospList.hospitalAddress,
+                        maxLines: 1,
+                        xMuted: true,
+                      ),
+                      MySpacing.height(12),
+                      Row(
+                        children: [
+                          MyText.bodySmall(
+                            '${hospList.hospitalContact}',
+                            xMuted: true,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
+        }),
+      );
+    }
   }
 
-  Widget _buildSingleDoctor(Doctor doctor) {
-    return MyContainer(
-      onTap: () {
-        // Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-        //     builder: (context) => MediCareSingleDoctorScreen(doctor)));
-      },
-      margin: MySpacing.fromLTRB(24, 0, 24, 16),
-      paddingAll: 16,
-      borderRadiusAll: 8,
-      child: Row(
+  Widget _donationDate(lastDonate){
+    if (lastDonate == '') {
+      return Row(
         children: [
-          MyContainer(
-            paddingAll: 0,
-            borderRadiusAll: 8,
-            child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-              child: Image(
-                width: 72,
-                height: 72,
-                image: AssetImage(doctor.image),
-              ),
-            ),
+          Icon(
+            Icons.watch_later,
+            color: customTheme.medicareOnPrimary.withAlpha(160),
+            size: 20,
           ),
-          MySpacing.width(16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                MyText.bodyLarge(
-                  doctor.name,
-                  fontWeight: 600,
-                ),
-                MySpacing.height(4),
-                MyText.bodySmall(
-                  doctor.category,
-                  xMuted: true,
-                ),
-                MySpacing.height(12),
-                Row(
-                  children: [
-                    MyStarRating(
-                      rating: doctor.ratings,
-                      showInactive: true,
-                      size: 15,
-                      inactiveColor:
-                          theme.colorScheme.onBackground.withAlpha(180),
-                    ),
-                    MySpacing.width(4),
-                    MyText.bodySmall(
-                      '${doctor.ratings} | ${doctor.reviews} Reviews',
-                      xMuted: true,
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          MySpacing.width(8),
+          MyText.bodySmall(
+            'Last Donate :',
+            color: customTheme.medicareOnPrimary,
+          ),
+          MySpacing.width(8),
+          MyText.bodySmall(
+            'Not Donate',
+            color: customTheme.medicareOnPrimary,
           ),
         ],
-      ),
-    );
+      );
+    } else {
+      return Row(
+        children: [
+          Icon(
+            Icons.watch_later,
+            color: customTheme.medicareOnPrimary.withAlpha(160),
+            size: 20,
+          ),
+          MySpacing.width(8),
+          MyText.bodySmall(
+            'Last Donate :',
+            color: customTheme.medicareOnPrimary,
+          ),
+          MySpacing.width(8),
+          MyText.bodySmall(
+            'Sun, Apr 24, 10:00am',
+            color: customTheme.medicareOnPrimary,
+          ),
+        ],
+      );
+    }
+  }
+
+  String capitalize(String s) {
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1);
   }
 
   @override
   Widget build(BuildContext context) {
+    String donorName = userData!.donorName;
+    String lastDonate = userData!.donorLatestDonate;
+
     return Scaffold(
       body: ListView(
         padding: MySpacing.top(48),
@@ -269,7 +225,7 @@ class _MainUserState extends State<MainUser> {
                         ),
                         MySpacing.width(4),
                         MyText.bodySmall(
-                          'Semarang, INA',
+                          'Terengganu, Malaysia',
                           color: theme.colorScheme.onBackground,
                           fontWeight: 600,
                         ),
@@ -314,8 +270,8 @@ class _MainUserState extends State<MainUser> {
             child: TextFormField(
               decoration: InputDecoration(
                 filled: true,
-                labelText: "Search a doctor or health issue",
-                hintText: "Search a doctor or health issue",
+                labelText: "Search a hospital",
+                hintText: "Search a hospital",
                 labelStyle: MyTextStyle.getStyle(
                     color: customTheme.medicarePrimary,
                     fontSize: 12,
@@ -327,28 +283,28 @@ class _MainUserState extends State<MainUser> {
                     fontWeight: 600,
                     muted: true),
                 fillColor: customTheme.card,
-                enabledBorder: OutlineInputBorder(
+                enabledBorder: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(8),
                     ),
                     borderSide: BorderSide.none),
-                border: OutlineInputBorder(
+                border: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(8),
                     ),
                     borderSide: BorderSide.none),
-                disabledBorder: OutlineInputBorder(
+                disabledBorder: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(8),
                     ),
                     borderSide: BorderSide.none),
-                errorBorder: OutlineInputBorder(
+                errorBorder: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(8),
                     ),
                     borderSide: BorderSide.none),
                 contentPadding: MySpacing.all(16),
-                prefixIcon: Icon(
+                prefixIcon: const Icon(
                   LucideIcons.search,
                   size: 20,
                 ),
@@ -367,11 +323,11 @@ class _MainUserState extends State<MainUser> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 MyText.bodyMedium(
-                  'User Dashboard',
+                  'Dashboard',
                   fontWeight: 700,
                 ),
                 MyText.bodySmall(
-                  'See all',
+                  'See more',
                   color: customTheme.medicarePrimary,
                   fontSize: 10,
                 ),
@@ -382,12 +338,12 @@ class _MainUserState extends State<MainUser> {
           MyContainer(
             borderRadiusAll: 8,
             margin: MySpacing.horizontal(24),
-            color: customTheme.medicarePrimary,
+            color: Colors.green[400],
             child: Column(
               children: [
                 Row(
                   children: [
-                    MyContainer(
+                    const MyContainer(
                       paddingAll: 0,
                       borderRadiusAll: 8,
                       child: ClipRRect(
@@ -407,26 +363,16 @@ class _MainUserState extends State<MainUser> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           MyText.bodySmall(
-                            'Dr.Haley lawrence',
+                            '${capitalize(donorName)}',
                             color: customTheme.medicareOnPrimary,
                             fontWeight: 700,
                           ),
                           MyText.bodySmall(
-                            'Dermatologists',
+                            'Available to donate',
                             fontSize: 10,
                             color: customTheme.medicareOnPrimary.withAlpha(200),
                           ),
                         ],
-                      ),
-                    ),
-                    MySpacing.width(16),
-                    MyContainer.rounded(
-                      paddingAll: 4,
-                      color: customTheme.medicareOnPrimary,
-                      child: Icon(
-                        Icons.videocam_outlined,
-                        color: customTheme.medicarePrimary,
-                        size: 16,
                       ),
                     ),
                   ],
@@ -438,16 +384,7 @@ class _MainUserState extends State<MainUser> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.watch_later,
-                        color: customTheme.medicareOnPrimary.withAlpha(160),
-                        size: 20,
-                      ),
-                      MySpacing.width(8),
-                      MyText.bodySmall(
-                        'Sun, Jan 19, 08:00am - 10:00am',
-                        color: customTheme.medicareOnPrimary,
-                      ),
+                      _donationDate(lastDonate),
                     ],
                   ),
                 ),
@@ -461,28 +398,14 @@ class _MainUserState extends State<MainUser> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 MyText.bodyMedium(
-                  'Let\'s find your doctor',
+                  'Find your nearest hospital',
                   fontWeight: 700,
-                ),
-                Icon(
-                  Icons.tune_outlined,
-                  color: customTheme.medicarePrimary,
-                  size: 20,
                 ),
               ],
             ),
           ),
-          MySpacing.height(24),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: _buildCategoryList(),
-            ),
-          ),
           MySpacing.height(16),
-          Column(
-            children: _buildDoctorList(),
-          ),
+          _buildAllHospital(),
         ],
       ),
     );

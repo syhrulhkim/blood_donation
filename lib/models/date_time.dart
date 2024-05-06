@@ -1,22 +1,26 @@
-class DateTime {
+class MyDateTime {
   final String date, day;
+  MyDateTime(this.date, this.day);
 
-  DateTime(this.date, this.day);
-
-  static List<DateTime> dummyList() {
-    List<DateTime> list = [];
-
-    list.add(DateTime("01", "Sun"));
-    list.add(DateTime("02", "Mon"));
-    list.add(DateTime("03", "Tue"));
-    list.add(DateTime("04", "Wed"));
-    list.add(DateTime("05", "Thu"));
-    list.add(DateTime("06", "Fri"));
-    list.add(DateTime("07", "Sat"));
-    list.add(DateTime("08", "Sun"));
-    list.add(DateTime("09", "Mon"));
-    list.add(DateTime("10", "Tue"));
-
+  static List<MyDateTime> dummyList() {
+    List<MyDateTime> list = [];
+    // Get today's date
+    DateTime today = DateTime.now();
+    // Add today's date
+    list.add(MyDateTime(today.toString(), _getDayOfWeek(today)));
+    // Add upcoming dates for the next 10 days
+    for (int i = 1; i <= 10; i++) {
+      DateTime nextDate = today.add(Duration(days: i));
+      list.add(MyDateTime(nextDate.toString(), _getDayOfWeek(nextDate)));
+    }
     return list;
+  }
+
+  static String _getDayOfWeek(DateTime date) {
+    // Days of the week
+    List<String> days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    // Get the day of the week index
+    int dayIndex = date.weekday - 1;
+    return days[dayIndex];
   }
 }

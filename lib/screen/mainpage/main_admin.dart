@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:blood_donation/api/main_api.dart';
 import 'package:blood_donation/models/hospital.dart';
+import 'package:blood_donation/models/user.dart';
 import 'package:blood_donation/screen/mainpage/hospital/hospital_add.dart';
 import 'package:blood_donation/screen/mainpage/hospital/hospital_details.dart';
 import 'package:blood_donation/screen/mainpage/notification_list.dart';
@@ -10,6 +13,7 @@ import 'package:blood_donation/widgets/my_text.dart';
 import 'package:blood_donation/widgets/my_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainAdmin extends StatefulWidget {
   const MainAdmin({super.key});
@@ -23,6 +27,7 @@ class _MainAdminState extends State<MainAdmin> {
   late ThemeData theme;
   late CustomTheme customTheme;
   List<Hospital> hospitalList = [];
+  late User userData;
 
   @override
   void initState() {
@@ -30,6 +35,7 @@ class _MainAdminState extends State<MainAdmin> {
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
     _buildHospitalList();
+    _getUser();
   }
 
   _buildHospitalList() async {
@@ -38,6 +44,17 @@ class _MainAdminState extends State<MainAdmin> {
     setState(() {
       hospitalList = list;
     });
+  }
+
+  _getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userDataJson = prefs.getString('userData');
+    if(userDataJson != null) {
+      Map<String, dynamic> decodedData = json.decode(userDataJson);
+      setState(() {
+        userData = decodedData as User;
+      });
+    }
   }
 
   Widget _buildAllHospital() {
@@ -54,7 +71,7 @@ class _MainAdminState extends State<MainAdmin> {
           return MyContainer(
             onTap: () {
               Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-                  builder: (context) => HospitalDetails(hospList)));
+                  builder: (context) => HospitalDetails(hospList, userData)));
             },
             margin: MySpacing.fromLTRB(24, 0, 24, 16),
             paddingAll: 16,

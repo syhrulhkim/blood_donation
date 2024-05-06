@@ -4,6 +4,8 @@
 // import 'package:flutkit/full_apps/other/medicare/single_chat_screen.dart';
 import 'package:blood_donation/api/hospital_api.dart';
 import 'package:blood_donation/models/hospital.dart';
+import 'package:blood_donation/models/user.dart';
+import 'package:blood_donation/screen/mainpage/hospital/hospital_book.dart';
 import 'package:blood_donation/screen/mainpage/hospital/hospital_edit.dart';
 import 'package:blood_donation/screen/mainpage/mainpage.dart';
 import 'package:blood_donation/theme/app_theme.dart';
@@ -16,7 +18,8 @@ import 'package:flutter/material.dart';
 
 class HospitalDetails extends StatefulWidget {
   final Hospital hospital;
-  const HospitalDetails(this.hospital);
+  final User user;
+  const HospitalDetails(this.hospital, this.user);
 
   @override
   State<HospitalDetails> createState() => _HospitalDetailsState();
@@ -24,6 +27,7 @@ class HospitalDetails extends StatefulWidget {
 
 class _HospitalDetailsState extends State<HospitalDetails> {
   late Hospital hospital;
+  late User user;
   late ThemeData theme;
   late CustomTheme customTheme;
 
@@ -33,6 +37,8 @@ class _HospitalDetailsState extends State<HospitalDetails> {
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
     hospital = widget.hospital;
+    user = widget.user;
+    print("user : ${user.donorRole}");
   }
 
   deleteHospital(hospitalId) async {
@@ -48,6 +54,78 @@ class _HospitalDetailsState extends State<HospitalDetails> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to delete hospital')),
       );
+    }
+  }
+
+  displayButton() {
+    var userRole = widget.user.donorRole;
+
+    switch (userRole) {
+      case "admin":
+        return Column(
+          children: [
+            MyButton.block(
+              elevation: 0,
+              borderRadiusAll: 8,
+              padding: MySpacing.y(20),
+              backgroundColor: AppTheme.customTheme.medicarePrimary,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HospitalEdit(widget.hospital),
+                  ),
+                );
+              },
+              child: MyText.bodyLarge(
+                'Edit',
+                color: AppTheme.customTheme.medicareOnPrimary,
+                fontWeight: 600,
+              ),
+            ),
+            MySpacing.height(5),
+            MyButton.block(
+              elevation: 0,
+              borderRadiusAll: 8,
+              padding: MySpacing.y(20),
+              backgroundColor: Colors.red[400],
+              onPressed: () async {
+                deleteHospital(widget.hospital.hospitalID);
+              },
+              child: MyText.bodyLarge(
+                'Delete',
+                color: AppTheme.customTheme.medicareOnPrimary,
+                fontWeight: 600,
+              ),
+            ),
+          ],
+        );
+      case "user":
+        return Column(
+          children: [
+            MyButton.block(
+              elevation: 0,
+              borderRadiusAll: 8,
+              padding: MySpacing.y(20),
+              backgroundColor: AppTheme.customTheme.medicarePrimary,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HospitalBooking(widget.hospital, widget.user),
+                  ),
+                );
+              },
+              child: MyText.bodyLarge(
+                'Book Appointment',
+                color: AppTheme.customTheme.medicareOnPrimary,
+                fontWeight: 600,
+              ),
+            ),
+          ],
+        );
+      default:
+        return SizedBox();
     }
   }
 
@@ -223,40 +301,7 @@ class _HospitalDetailsState extends State<HospitalDetails> {
             ),
           ),
           MySpacing.height(32),
-          MyButton.block(
-            elevation: 0,
-            borderRadiusAll: 8,
-            padding: MySpacing.y(20),
-            backgroundColor: AppTheme.customTheme.medicarePrimary,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HospitalEdit(widget.hospital),
-                ),
-              );
-            },
-            child: MyText.bodyLarge(
-              'Edit',
-              color: AppTheme.customTheme.medicareOnPrimary,
-              fontWeight: 600,
-            ),
-          ),
-          MySpacing.height(5),
-          MyButton.block(
-            elevation: 0,
-            borderRadiusAll: 8,
-            padding: MySpacing.y(20),
-            backgroundColor: Colors.red[400],
-            onPressed: () async {
-              deleteHospital(widget.hospital.hospitalID);
-            },
-            child: MyText.bodyLarge(
-              'Delete',
-              color: AppTheme.customTheme.medicareOnPrimary,
-              fontWeight: 600,
-            ),
-          ),
+          displayButton(),
         ],
       ),
     );
