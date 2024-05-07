@@ -87,6 +87,7 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(
             builder: (context) => MainPage()),
       );
+      print("userData: ${userDataJson}");
 
       // Store JSON string in SharedPreferences
       await prefs.setString('userData', userDataJson);

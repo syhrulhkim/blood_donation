@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:blood_donation/api/main_api.dart';
+import 'package:blood_donation/api/user_api.dart';
 import 'package:blood_donation/models/hospital.dart';
 import 'package:blood_donation/models/user.dart';
 import 'package:blood_donation/screen/mainpage/hospital/hospital_details.dart';
 import 'package:blood_donation/screen/mainpage/notification_list.dart';
-// import 'package:flutkit/full_apps/other/medicare/single_doctor_screen.dart';
+import 'package:intl/intl.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_container.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
@@ -28,6 +29,7 @@ class _MainUserState extends State<MainUser> {
   late CustomTheme customTheme;
   List<Hospital> hospitalList = [];
   late User? userData;
+  bool isLoadingUser = true;
 
   @override
   void initState() {
@@ -51,26 +53,34 @@ class _MainUserState extends State<MainUser> {
     String? userDataJson = prefs.getString('userData');
     if(userDataJson != null) {
       Map<String, dynamic> decodedData = json.decode(userDataJson);
-      setState(() {
-        userData = User(
-          id: decodedData['id'],
-          donorID: decodedData['donorID'],
-          donorAddress: decodedData['donor_Address'],
-          donorContact: decodedData['donor_Contact'],
-          donorDOB: decodedData['donor_DOB'],
-          donorEligibility: decodedData['donor_Eligibility'],
-          donorEmail: decodedData['donor_Email'],
-          donorGender: decodedData['donor_Gender'],
-          donorHealth: decodedData['donor_Health'],
-          donorLatestDonate: decodedData['donor_LatestDonate'],
-          donorName: decodedData['donor_Name'],
-          donorPostcode: decodedData['donor_Postcode'],
-          donorRole: decodedData['donor_Role'],
-          donorType: decodedData['donor_Type'],
-          donorUsername: decodedData['donor_Username'],
-          donorWeight: decodedData['donor_Weight'],
-        );
-      });
+      var userId = decodedData['donorID'];
+      var fetchedUserData = await UserAPI().getUserData(userId);
+
+      if(fetchedUserData != null) {
+        setState(() {
+          isLoadingUser = false;
+          userData = User(
+            donorID: fetchedUserData['donorID'],
+            donorAddress: fetchedUserData['donor_Address'],
+            donorContact: fetchedUserData['donor_Contact'],
+            donorDOB: fetchedUserData['donor_DOB'],
+            donorEligibility: fetchedUserData['donor_Eligibility'],
+            donorAvailability: fetchedUserData['donor_Availability'],
+            donorEmail: fetchedUserData['donor_Email'],
+            donorGender: fetchedUserData['donor_Gender'],
+            donorHealth: fetchedUserData['donor_Health'],
+            donorLatestDonate: fetchedUserData['donor_LatestDonate'],
+            donorName: fetchedUserData['donor_Name'],
+            donorPostcode: fetchedUserData['donor_Postcode'],
+            donorRole: fetchedUserData['donor_Role'],
+            donorType: fetchedUserData['donor_Type'],
+            donorUsername: fetchedUserData['donor_Username'],
+            donorWeight: fetchedUserData['donor_Weight'],
+          );
+        });
+      } else {
+        print("User data not found for userId: $userId");
+      }
     }
   }
 
@@ -143,7 +153,141 @@ class _MainUserState extends State<MainUser> {
     }
   }
 
+  String capitalize(String s) {
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1);
+  }
+
+  Widget donateAvailability() {
+    if (isLoadingUser) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      User? user = userData;
+      if (user?.donorAvailability == "donated") {
+        return MyContainer(
+          borderRadiusAll: 8,
+          margin: MySpacing.horizontal(24),
+          color: Colors.red[400],
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const MyContainer(
+                    paddingAll: 0,
+                    borderRadiusAll: 8,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      child: Image(
+                        height: 40,
+                        width: 40,
+                        image: AssetImage(
+                          'assets/images/profile/avatar_3.jpg',
+                        ),
+                      ),
+                    ),
+                  ),
+                  MySpacing.width(16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MyText.bodySmall(
+                          '${capitalize(user!.donorName)}',
+                          color: customTheme.medicareOnPrimary,
+                          fontWeight: 700,
+                        ),
+                        MyText.bodySmall(
+                          'Donated',
+                          fontSize: 10,
+                          color: customTheme.medicareOnPrimary.withAlpha(200),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              MySpacing.height(16),
+              MyContainer(
+                borderRadiusAll: 8,
+                color: theme.colorScheme.onBackground.withAlpha(30),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _donationDate(user),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        return MyContainer(
+          borderRadiusAll: 8,
+          margin: MySpacing.horizontal(24),
+          color: Colors.green[400],
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const MyContainer(
+                    paddingAll: 0,
+                    borderRadiusAll: 8,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      child: Image(
+                        height: 40,
+                        width: 40,
+                        image: AssetImage(
+                          'assets/images/profile/avatar_3.jpg',
+                        ),
+                      ),
+                    ),
+                  ),
+                  MySpacing.width(16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MyText.bodySmall(
+                          '${capitalize(user!.donorName)}',
+                          color: customTheme.medicareOnPrimary,
+                          fontWeight: 700,
+                        ),
+                        MyText.bodySmall(
+                          'Available to donate',
+                          fontSize: 10,
+                          color: customTheme.medicareOnPrimary.withAlpha(200),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              MySpacing.height(16),
+              MyContainer(
+                borderRadiusAll: 8,
+                color: theme.colorScheme.onBackground.withAlpha(30),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _donationDate(user),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
   Widget _donationDate(lastDonate){
+    DateTime dateTime = DateTime.parse(lastDonate.donorLatestDonate.toString());
+    String formattedDate = DateFormat('E, MMM dd, hh:mma').format(dateTime);
+
+    print("lastDonate : ${lastDonate.donorLatestDonate.toString()}");
     if (lastDonate == '') {
       return Row(
         children: [
@@ -179,7 +323,7 @@ class _MainUserState extends State<MainUser> {
           ),
           MySpacing.width(8),
           MyText.bodySmall(
-            'Sun, Apr 24, 10:00am',
+            '${formattedDate}',
             color: customTheme.medicareOnPrimary,
           ),
         ],
@@ -187,16 +331,8 @@ class _MainUserState extends State<MainUser> {
     }
   }
 
-  String capitalize(String s) {
-    if (s.isEmpty) return s;
-    return s[0].toUpperCase() + s.substring(1);
-  }
-
   @override
   Widget build(BuildContext context) {
-    String donorName = userData!.donorName;
-    String lastDonate = userData!.donorLatestDonate;
-
     return Scaffold(
       body: ListView(
         padding: MySpacing.top(48),
@@ -335,62 +471,7 @@ class _MainUserState extends State<MainUser> {
             ),
           ),
           MySpacing.height(24),
-          MyContainer(
-            borderRadiusAll: 8,
-            margin: MySpacing.horizontal(24),
-            color: Colors.green[400],
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    const MyContainer(
-                      paddingAll: 0,
-                      borderRadiusAll: 8,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        child: Image(
-                          height: 40,
-                          width: 40,
-                          image: AssetImage(
-                            'assets/images/profile/avatar_3.jpg',
-                          ),
-                        ),
-                      ),
-                    ),
-                    MySpacing.width(16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          MyText.bodySmall(
-                            '${capitalize(donorName)}',
-                            color: customTheme.medicareOnPrimary,
-                            fontWeight: 700,
-                          ),
-                          MyText.bodySmall(
-                            'Available to donate',
-                            fontSize: 10,
-                            color: customTheme.medicareOnPrimary.withAlpha(200),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                MySpacing.height(16),
-                MyContainer(
-                  borderRadiusAll: 8,
-                  color: theme.colorScheme.onBackground.withAlpha(30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _donationDate(lastDonate),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          donateAvailability(),
           MySpacing.height(24),
           Padding(
             padding: MySpacing.horizontal(24),

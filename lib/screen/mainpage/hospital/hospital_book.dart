@@ -1,7 +1,9 @@
+import 'package:blood_donation/api/booking_api.dart';
 import 'package:blood_donation/models/date_time.dart';
 import 'package:blood_donation/models/hospital.dart';
 import 'package:blood_donation/models/slot.dart';
 import 'package:blood_donation/models/user.dart';
+import 'package:blood_donation/screen/mainpage/mainpage.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_button.dart';
 import 'package:blood_donation/widgets/my_container.dart';
@@ -37,7 +39,7 @@ class _HospitalBookingState extends State<HospitalBooking> {
     super.initState();
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
-    data = MyDateTime.dummyList();
+    data = MyDateTime.filteredList();
     morningSlots = Slot.morningList();
     afternoonSlots = Slot.afternoonList();
     eveningSlots = Slot.eveningList();
@@ -183,30 +185,46 @@ class _HospitalBookingState extends State<HospitalBooking> {
   }
 
   
-  void bookAppointment(DateTime selectedDate, String selectedTime) {
-    // Parse the selectedTime to get hours and minutes
-    List<String> timeParts = selectedTime.split(':');
-    int hours = int.parse(timeParts[0]);
-    int minutes = int.parse(timeParts[1].split(' ')[0]); // Extract minutes
-    String period = timeParts[1].split(' ')[1]; // Extract AM/PM
+  void bookAppointment(DateTime selectedDate, String selectedTime) async{
+    try {
+      // Parse the selectedTime to get hours and minutes
+      List<String> timeParts = selectedTime.split(':');
+      int hours = int.parse(timeParts[0]);
+      int minutes = int.parse(timeParts[1].split(' ')[0]); // Extract minutes
+      String period = timeParts[1].split(' ')[1]; // Extract AM/PM
 
-    // Convert hours to 24-hour format if needed
-    if (period == 'pm' && hours < 12) {
-      hours += 12;
-    } else if (period == 'am' && hours == 12) {
-      hours = 0;
+      // Convert hours to 24-hour format if needed
+      if (period == 'pm' && hours < 12) {
+        hours += 12;
+      } else if (period == 'am' && hours == 12) {
+        hours = 0;
+      }
+
+      // Create a new DateTime object with the selected date and time
+      DateTime appointmentDateTime = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        hours,
+        minutes,
+      );
+      String userId = widget.user.donorID;
+      String hospitalID = widget.hospital.hospitalID;
+
+      print("Appointment DateTime: $appointmentDateTime");
+      await BookingAPI().submitAppointment(appointmentDateTime, userId, hospitalID);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MainPage()),
+      );
+    } catch (e) {
+      print("Error booking appointment: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to book appointment'),
+        ),
+      );
     }
-
-    // Create a new DateTime object with the selected date and time
-    DateTime appointmentDateTime = DateTime(
-      selectedDate.year,
-      selectedDate.month,
-      selectedDate.day,
-      hours,
-      minutes,
-    );
-
-    print("Appointment DateTime: $appointmentDateTime");
   }
 
   @override
