@@ -30,6 +30,7 @@ class _HospitalDetailsState extends State<HospitalDetails> {
   late User user;
   late ThemeData theme;
   late CustomTheme customTheme;
+  List<bool> isSelected = [false, true, false];
 
   @override
   void initState() {
@@ -127,6 +128,58 @@ class _HospitalDetailsState extends State<HospitalDetails> {
       default:
         return SizedBox();
     }
+  }
+
+  Widget criticalBloodLevel() {
+    return Container(
+      child: Center(
+        child: Container(
+          width: double.infinity,
+          child: Wrap(
+            spacing: 5.0, // Spacing between containers
+            runSpacing: 10.0, // Spacing between rows of containers
+            children: List.generate(
+              8, // Number of containers
+              (index) => Container(
+                width: 75,
+                height: 40,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5.0),
+                    color: Colors.white,
+                    border: Border.all(
+                      width: 0.5,
+                    )
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(5,5,5,5),
+                    child: Row(
+                      children: [
+                        MyContainer(
+                          paddingAll: 4,
+                          child: Text("O-")
+                        ),
+                        SizedBox(width: MediaQuery.of(context).size.width * 0.01),
+                        MyContainer(
+                          color: Colors.green,
+                          paddingAll: 4,
+                          child: Text(
+                            "75%",
+                            style: TextStyle(
+                              color: Colors.white
+                            ),
+                          )
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -256,28 +309,12 @@ class _HospitalDetailsState extends State<HospitalDetails> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                MyText.bodyLarge(
-                  'Description',
-                  fontWeight: 600,
+                Container(
+                  margin: MySpacing.bottom(8),
+                  child: MyText.titleSmall("Critical Blood Level", fontWeight: 700),
                 ),
-                MySpacing.height(16),
-                RichText(
-                  text: TextSpan(children: <TextSpan>[
-                    TextSpan(
-                        text: "Example of description for each hospital ...",
-                        style: MyTextStyle.bodySmall(
-                          color: theme.colorScheme.onBackground,
-                          xMuted: true,
-                          height: 1.5,
-                        )),
-                    TextSpan(
-                      text: " Read more",
-                      style: MyTextStyle.bodySmall(
-                        color: CustomTheme.blue,
-                      ),
-                    ),
-                  ]),
-                ),
+                MySpacing.height(5),
+                criticalBloodLevel(),
                 MySpacing.height(24),
                 MyText.bodyLarge(
                   'Location',
