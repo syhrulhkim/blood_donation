@@ -1,5 +1,6 @@
 import 'package:blood_donation/models/doctor.dart';
 import 'package:blood_donation/models/schedule.dart';
+import 'package:blood_donation/screen/news/news_add.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_container.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
@@ -204,26 +205,32 @@ class _NewsState extends State<News> {
       appBar: AppBar(
         centerTitle: true,
         title: MyText.bodyLarge(
-          'My booking',
+          'News',
           fontWeight: 700,
         ),
         elevation: 0,
         backgroundColor: theme.scaffoldBackgroundColor,
         automaticallyImplyLeading: false,
         actions: [
-          Icon(
-            Icons.more_horiz,
-            color: theme.colorScheme.onBackground,
-            size: 24,
+          MyContainer(
+            color: Colors.transparent,
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+              builder: (context) => NewsAdd()));
+            },
+            child: Icon(
+              Icons.add,
+              color: customTheme.medicarePrimary,
+              size: 20,
+            ),
           ),
-          MySpacing.width(24)
         ],
       ),
       body: ListView(
         padding: MySpacing.fromLTRB(24, 8, 24, 24),
         children: [
           MyText.titleMedium(
-            'Available ',
+            'Latest Announcement',
             letterSpacing: 0.5,
             fontWeight: 700,
           ),
