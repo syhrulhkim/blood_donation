@@ -1,4 +1,6 @@
 import 'package:blood_donation/api/main_api.dart';
+import 'package:blood_donation/constant.dart';
+import 'package:blood_donation/main.dart';
 import 'package:blood_donation/models/hospital.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/theme/custom_theme.dart';
@@ -6,8 +8,10 @@ import 'package:blood_donation/widgets/my_button.dart';
 import 'package:blood_donation/widgets/my_container.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
 import 'package:blood_donation/widgets/my_text.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:http/http.dart' as http;
 
 class NewsAdd extends StatefulWidget {
   const NewsAdd({super.key});
@@ -29,6 +33,25 @@ class _NewsAddState extends State<NewsAdd> {
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
     _buildHospitalList();
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (android != null) {
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification!.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+                channel.id, channel.name, 
+                color: Colors.blue,
+                playSound: true,
+                icon: '@mipmap/ic_launcher'),
+          )
+        );
+      }
+    });
     // _nameController = TextEditingController();
     // _criticalController = TextEditingController();
     // _addressController = TextEditingController();
@@ -52,6 +75,90 @@ class _NewsAddState extends State<NewsAdd> {
     setState(() {
       hospitalList = list;
     });
+  }
+
+  // test send notifications
+  // _submitButton(userIds, title, body) async {
+  //   try {
+  //     // const tokens = await getUserTokens(userIds);
+  //     const tokens = "dEz9SJduTWOvuAU-tsM6C2:APA91bH95dqx9eCOhjQqwTxZ92kOLoRNxg0knKC9ggzu8kX8sLTYUrKIPV-6VCdoVzWgSrdmfON1Qkcb4orSSwGZmtwf69HneX7-Q7IVrR6f2rktjFHXpI1QfhTV0Zpr9l9N8tQXrswj";
+
+  //     if (tokens.length > 0) {
+  //       const message = {
+  //         notification: {
+  //           title: title,
+  //           body: body,
+  //         },
+  //         tokens: tokens,
+  //       };
+
+  //       const response = await admin.messaging().sendMulticast(message);
+  //       print("response : $response");
+  //       print('Successfully sent message:');
+  //     } else {
+  //       print('No tokens found for the provided user IDs');
+  //     }
+  //   } catch (error) {
+  //     print('Error sending message:');
+  //   }
+  // }
+
+  // send to all
+  Future<bool> _submitButton({
+    required String title,
+    required String body,
+  }) async {
+    // FirebaseMessaging.instance.subscribeToTopic("myTopic1");
+
+    String dataNotifications = '{ '
+        ' "to" : "/topics/myTopic1" , '
+        ' "notification" : {'
+        ' "title":"$title" , '
+        ' "body":"$body" '
+        ' } '
+        ' } ';
+
+    var response = await http.post(
+      Uri.parse(Constants.BASE_URL),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'key= ${Constants.KEY_SERVER}',
+      },
+      body: dataNotifications,
+    );
+    print(response.body.toString());
+    print(dataNotifications.toString());
+    return true;
+  }
+
+  // send to certain devices
+  Future<bool> pushNotificationsGroupDevice({
+    required String title,
+    required String body,
+  }) async {
+    String dataNotifications = '{'
+        '"operation": "create",'
+        '"notification_key_name": "appUser-testUser",'
+        '"registration_ids":["dc26JnqpRzyd7_kvvieDEw:APA91bE05VkaTqwin5O8S4_gX72ZBCX9hWSwPKZfeG-AHiZwFiVm5bxAvvExrYYSXwvkSqV98F-52ERHW0SHEDzqnTW3S1HmThLsTzBN1kZphHHWDybnn33WWHMF6qNhyI27LZj06V8v","e72nYm3rS3uEcmTdgOEOm9:APA91bGhWPn7IEscWoDBN53AMBj9phyDA0thmUo_k6rTQlmy0t-yLJ1uCUgUWUffAg9Jc0DafnJrMeSV55L-MgnanIo1WVtstz43lUS5ySmXP9h2i1r9Ns0ToS7Q1XbUNTVwv9gC8-_4"],'        
+        '"notification" : {'
+          '"title":"$title",'
+          '"body":"$body"'
+          ' }'
+        ' }';
+
+    var response= await http.post(
+      Uri.parse(Constants.BASE_URL),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'key= ${Constants.KEY_SERVER}',
+        'project_id': "${Constants.SENDER_ID}"
+      },
+      body: dataNotifications,
+    );
+
+    print(response.body.toString());
+
+    return true;
   }
 
   Widget newsForm() {
@@ -205,7 +312,10 @@ class _NewsAddState extends State<NewsAdd> {
                   padding: MySpacing.y(20),
                   backgroundColor: AppTheme.customTheme.medicarePrimary,
                   onPressed: () {
-                    // _submitForm();
+                    pushNotificationsGroupDevice(
+                      title: "Test titlasfasfasg",
+                      body: "Test body",
+                    );
                   },
                   child: MyText.bodyLarge(
                     'Submit',
