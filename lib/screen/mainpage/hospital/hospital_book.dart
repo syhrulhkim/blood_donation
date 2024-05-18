@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 
 class HospitalBooking extends StatefulWidget {
   final Hospital hospital;
-  final User user;
+  final Users user;
   const HospitalBooking(this.hospital, this.user);
 
   @override
@@ -22,7 +22,7 @@ class HospitalBooking extends StatefulWidget {
 
 class _HospitalBookingState extends State<HospitalBooking> {
   late Hospital hospital;
-  late User user;
+  late Users user;
   late ThemeData theme;
   late CustomTheme customTheme;
   late int selectedDate = 0;

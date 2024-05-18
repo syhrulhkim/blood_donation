@@ -1,9 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:blood_donation/models/user.dart';
 
 class UserAPI {
   final _db = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
+
+  Future<List<Users>> allUser() async {
+    final snapshot = await _db.collection("user").get();
+    final data = snapshot.docs.map((e) => Users.fromSnapshot(e)).toList();
+    return data;
+  }
 
   Future<Map<String, dynamic>?> getUserData(userId) async {
     try {

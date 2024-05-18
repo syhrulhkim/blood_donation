@@ -1,7 +1,10 @@
 import 'package:blood_donation/api/main_api.dart';
+import 'package:blood_donation/api/user_api.dart';
 import 'package:blood_donation/constant.dart';
 import 'package:blood_donation/main.dart';
+import 'package:blood_donation/models/campaign.dart';
 import 'package:blood_donation/models/hospital.dart';
+import 'package:blood_donation/models/user.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/theme/custom_theme.dart';
 import 'package:blood_donation/widgets/my_button.dart';
@@ -24,8 +27,11 @@ class _NewsAddState extends State<NewsAdd> {
   late ThemeData theme;
   late CustomTheme customTheme;
   List<Hospital> hospitalList = [];
+  List<Users> userList = [];
   String? selectedHospital;
   String? selectedAvailability;
+  late TextEditingController _titleController;
+  late TextEditingController _descController;
 
   @override
   void initState() {
@@ -33,6 +39,7 @@ class _NewsAddState extends State<NewsAdd> {
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
     _buildHospitalList();
+    _buildUserList();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
@@ -52,20 +59,14 @@ class _NewsAddState extends State<NewsAdd> {
         );
       }
     });
-    // _nameController = TextEditingController();
-    // _criticalController = TextEditingController();
-    // _addressController = TextEditingController();
-    // _contactController = TextEditingController();
-    // _imageLinkController = TextEditingController();
+    _titleController = TextEditingController();
+    _descController = TextEditingController();
   }
 
   @override
   void dispose() {
-    // _nameController.dispose();
-    // _criticalController.dispose();
-    // _addressController.dispose();
-    // _contactController.dispose();
-    // _imageLinkController.dispose();
+    _titleController.dispose();
+    _descController.dispose();
     super.dispose();
   }
 
@@ -77,39 +78,40 @@ class _NewsAddState extends State<NewsAdd> {
     });
   }
 
-  // test send notifications
-  // _submitButton(userIds, title, body) async {
-  //   try {
-  //     // const tokens = await getUserTokens(userIds);
-  //     const tokens = "dEz9SJduTWOvuAU-tsM6C2:APA91bH95dqx9eCOhjQqwTxZ92kOLoRNxg0knKC9ggzu8kX8sLTYUrKIPV-6VCdoVzWgSrdmfON1Qkcb4orSSwGZmtwf69HneX7-Q7IVrR6f2rktjFHXpI1QfhTV0Zpr9l9N8tQXrswj";
+  _buildUserList() async {
+    UserAPI userAPI = UserAPI();
+    List<Users> list = await userAPI.allUser();
+    setState(() {
+      userList = list;
+    });
+  }
 
-  //     if (tokens.length > 0) {
-  //       const message = {
-  //         notification: {
-  //           title: title,
-  //           body: body,
-  //         },
-  //         tokens: tokens,
-  //       };
+  buttonCreateAnnouncement() async{
+    String title = _titleController.text;
+    String description = _descController.text;
+    String? hospital = selectedHospital;
+    String? availability = selectedAvailability;
 
-  //       const response = await admin.messaging().sendMulticast(message);
-  //       print("response : $response");
-  //       print('Successfully sent message:');
-  //     } else {
-  //       print('No tokens found for the provided user IDs');
-  //     }
-  //   } catch (error) {
-  //     print('Error sending message:');
-  //   }
-  // }
+    // Campaign newCampaign = Campaign(
+    //   hospitalID: _nameController.text,
+    //   criticalBloodId: _criticalController.text,
+    //   hospitalAddress: _addressController.text,
+    //   hospitalName: _nameController.text,
+    //   hospitalContact: _contactController.text,
+    //   hospitalImage: _imageLinkController.text,
+    // );
+
+    print("========================================");
+    print("title: ${title}");
+    print("description: ${description}");
+    print("hospital: ${hospital}");
+    print("availability: ${availability}");
+    print("========================================");
+  }
 
   // send to all
-  Future<bool> _submitButton({
-    required String title,
-    required String body,
-  }) async {
+  Future<bool> _submitButton({required String title,required String body,}) async {
     // FirebaseMessaging.instance.subscribeToTopic("myTopic1");
-
     String dataNotifications = '{ '
         ' "to" : "/topics/myTopic1" , '
         ' "notification" : {'
@@ -132,17 +134,17 @@ class _NewsAddState extends State<NewsAdd> {
   }
 
   // send to certain devices
-  Future<bool> pushNotificationsGroupDevice({
-    required String title,
-    required String body,
-  }) async {
+  Future<bool> pushNotificationsGroupDevice() async {
+    print("_titleController: ${_titleController.text}");
+    print("_descController: ${_descController.text}");
+
     String dataNotifications = '{'
         '"operation": "create",'
         '"notification_key_name": "appUser-testUser",'
-        '"registration_ids":["dc26JnqpRzyd7_kvvieDEw:APA91bE05VkaTqwin5O8S4_gX72ZBCX9hWSwPKZfeG-AHiZwFiVm5bxAvvExrYYSXwvkSqV98F-52ERHW0SHEDzqnTW3S1HmThLsTzBN1kZphHHWDybnn33WWHMF6qNhyI27LZj06V8v","e72nYm3rS3uEcmTdgOEOm9:APA91bGhWPn7IEscWoDBN53AMBj9phyDA0thmUo_k6rTQlmy0t-yLJ1uCUgUWUffAg9Jc0DafnJrMeSV55L-MgnanIo1WVtstz43lUS5ySmXP9h2i1r9Ns0ToS7Q1XbUNTVwv9gC8-_4"],'        
+        '"registration_ids":["eUk1uLdoRW6ZKY09ZadMOn:APA91bG34W_m1TvVvKZmo85xZdy5yGhatNlaO9joe-YvKeLomuMjwe-sSGHGvtHvrVCjBVTQCV15xyy9EbPI6v-D9yEVVfX5p8UuNDEbi67wSeUktSYu2CDMtnBnlyP75OcipeTIazv-","e72nYm3rS3uEcmTdgOEOm9:APA91bGhWPn7IEscWoDBN53AMBj9phyDA0thmUo_k6rTQlmy0t-yLJ1uCUgUWUffAg9Jc0DafnJrMeSV55L-MgnanIo1WVtstz43lUS5ySmXP9h2i1r9Ns0ToS7Q1XbUNTVwv9gC8-_4"],'        
         '"notification" : {'
-          '"title":"$title",'
-          '"body":"$body"'
+          '"title":"${_titleController.text}",'
+          '"body":"${_descController.text}"'
           ' }'
         ' }';
 
@@ -157,12 +159,12 @@ class _NewsAddState extends State<NewsAdd> {
     );
 
     print(response.body.toString());
-
     return true;
   }
 
   Widget newsForm() {
     print("hospitalList: ${hospitalList}");
+    print("userList: ${userList}");
     List<String> selectedHospitalOptions = [];
     List<String> options = ['All', 'Not Donate', 'Donated', 'Critical Blood'];
 
@@ -181,7 +183,7 @@ class _NewsAddState extends State<NewsAdd> {
                   child: MyText.titleMedium("Create Announcement", fontWeight: 600),
                 ),
                 TextFormField(
-                  // controller: _nameController,
+                  controller: _titleController,
                   decoration: InputDecoration(
                     labelText: "Title",
                     border: theme.inputDecorationTheme.border,
@@ -196,7 +198,7 @@ class _NewsAddState extends State<NewsAdd> {
                   },
                 ),
                 TextFormField(
-                  // controller: _addressController,
+                  controller: _descController,
                   maxLines: null,
                   minLines: 3,
                   decoration: InputDecoration(
@@ -312,10 +314,8 @@ class _NewsAddState extends State<NewsAdd> {
                   padding: MySpacing.y(20),
                   backgroundColor: AppTheme.customTheme.medicarePrimary,
                   onPressed: () {
-                    pushNotificationsGroupDevice(
-                      title: "Test titlasfasfasg",
-                      body: "Test body",
-                    );
+                    buttonCreateAnnouncement();
+                    // pushNotificationsGroupDevice();
                   },
                   child: MyText.bodyLarge(
                     'Submit',

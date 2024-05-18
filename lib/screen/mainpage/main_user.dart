@@ -28,7 +28,7 @@ class _MainUserState extends State<MainUser> {
   late ThemeData theme;
   late CustomTheme customTheme;
   List<Hospital> hospitalList = [];
-  late User? userData;
+  late Users? userData;
   bool isLoadingUser = true;
 
   @override
@@ -59,7 +59,7 @@ class _MainUserState extends State<MainUser> {
       if(fetchedUserData != null) {
         setState(() {
           isLoadingUser = false;
-          userData = User(
+          userData = Users(
             donorID: fetchedUserData['donorID'],
             donorAddress: fetchedUserData['donor_Address'],
             donorContact: fetchedUserData['donor_Contact'],
@@ -164,7 +164,7 @@ class _MainUserState extends State<MainUser> {
         child: CircularProgressIndicator(),
       );
     } else {
-      User? user = userData;
+      Users? user = userData;
       if (user?.donorAvailability == "donated") {
         return MyContainer(
           borderRadiusAll: 8,

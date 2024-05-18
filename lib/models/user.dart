@@ -1,4 +1,6 @@
-class User {
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class Users {
   final String donorID;
   final String donorAddress;
   final String donorContact;
@@ -16,7 +18,7 @@ class User {
   final String donorUsername;
   final String donorWeight;
 
-  User({
+  Users({
     required this.donorID,
     required this.donorAddress,
     required this.donorContact,
@@ -54,8 +56,8 @@ class User {
         donorWeight.isEmpty;
   }
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+  factory Users.fromJson(Map<String, dynamic> json) {
+    return Users(
       donorID: json['donorID'] ?? '',
       donorAddress: json['donor_Address'] ?? '',
       donorContact: json['donor_Contact'] ?? '',
@@ -94,5 +96,27 @@ class User {
       "donor_Username": donorUsername,
       "donor_Weight": donorWeight,
     };
+  }
+
+  factory Users.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> document) {
+    final data = document.data()!;
+    return Users(
+      donorID: data["donorID"],
+      donorAddress: data["donor_Address"],
+      donorContact: data["donor_Contact"],
+      donorDOB: data["donor_DOB"],
+      donorEligibility: data["donor_Eligibility"],
+      donorAvailability: data["donor_Availability"],
+      donorEmail: data["donor_Email"],
+      donorGender: data["donor_Gender"],
+      donorHealth: data["donor_Health"],
+      donorLatestDonate: data["donor_LatestDonate"],
+      donorName: data["donor_Name"],
+      donorPostcode: data["donor_Postcode"],
+      donorRole: data["donor_Role"],
+      donorType: data["donor_Type"],
+      donorUsername: data["donor_Username"],
+      donorWeight: data["donor_Weight"],
+    );
   }
 }

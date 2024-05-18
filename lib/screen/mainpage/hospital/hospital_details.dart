@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 
 class HospitalDetails extends StatefulWidget {
   final Hospital hospital;
-  final User user;
+  final Users user;
   const HospitalDetails(this.hospital, this.user);
 
   @override
@@ -27,7 +27,7 @@ class HospitalDetails extends StatefulWidget {
 
 class _HospitalDetailsState extends State<HospitalDetails> {
   late Hospital hospital;
-  late User user;
+  late Users user;
   late ThemeData theme;
   late CustomTheme customTheme;
   List<bool> isSelected = [false, true, false];

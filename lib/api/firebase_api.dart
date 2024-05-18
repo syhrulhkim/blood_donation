@@ -27,17 +27,4 @@ class FirebaseAPI {
           builder: (context) => News()),
     );
   }
-
-  Future<void> updateUser(Map<String, dynamic> user) async {
-    try {
-
-      // Map<String, dynamic> userDetails = user.toJson();
-      // // Update the hospital data in the Firestore collection
-      // await _db.collection("user").doc(user["donorID"]).update(userDetails);
-      print("Hospital data updated successfully");
-    } catch (error) {
-      print("Error updating hospital data: $error");
-      throw Exception("Failed to update hospital data");
-    }
-  }
 }
