@@ -39,7 +39,6 @@ class _MainPageState extends State<MainPage> {
   Future<void> _getUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userDataJson = prefs.getString('userData');
-    print("userDataJson: ${userDataJson}");
 
     if (userDataJson != null) {
       setState(() {

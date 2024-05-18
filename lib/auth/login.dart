@@ -3,6 +3,7 @@
 // import 'package:flutkit/full_apps/other/medicare/registration_screen.dart';
 import 'dart:convert';
 
+import 'package:blood_donation/api/firebase_api.dart';
 import 'package:blood_donation/api/login_api.dart';
 import 'package:blood_donation/auth/forgotpassword.dart';
 import 'package:blood_donation/auth/signup.dart';
@@ -54,6 +55,7 @@ class _LoginPageState extends State<LoginPage> {
       if (userDataObject is Map<String, dynamic>) {
         var userData = userDataObject as Map<String, dynamic>;
         if (userData != null) {
+          await FirebaseAPI().initNotifications(userData);
           await _storeUserData(userData);
         }
       } else {
@@ -87,7 +89,6 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(
             builder: (context) => MainPage()),
       );
-      print("userData: ${userDataJson}");
 
       // Store JSON string in SharedPreferences
       await prefs.setString('userData', userDataJson);
