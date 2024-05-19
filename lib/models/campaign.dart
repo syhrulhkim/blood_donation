@@ -88,4 +88,41 @@ class Campaign {
       timeStart: data["timeStart"],
     );
   }
+
+  toMap() {
+    return {
+      "campaignId": campaignId,
+      "campaignDate": campaignDate,
+      "campaignTitle": campaignTitle,
+      "campaignDesc": campaignDesc,
+      "campaignRequire": campaignRequire,
+      "place": place,
+      "postcode": postcode,
+      "timeEnd": timeEnd,
+      "timeStart": timeStart,
+    };
+  }
+}
+
+class CampaignSendTo {
+  String donorID;
+  String donorName;
+  String campaignStatus;
+  String readTime;
+
+  CampaignSendTo({
+    required this.donorID,
+    required this.donorName,
+    required this.campaignStatus,
+    required this.readTime,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'donorID': donorID,
+      'donor_Name': donorName,
+      'campaignStatus': campaignStatus,
+      'readTime': readTime,
+    };
+  }
 }

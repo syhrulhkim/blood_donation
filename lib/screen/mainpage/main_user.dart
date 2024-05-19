@@ -76,6 +76,7 @@ class _MainUserState extends State<MainUser> {
             donorType: fetchedUserData['donor_Type'],
             donorUsername: fetchedUserData['donor_Username'],
             donorWeight: fetchedUserData['donor_Weight'],
+            donorFcmToken: fetchedUserData['donor_fcmToken'],
           );
         });
       } else {

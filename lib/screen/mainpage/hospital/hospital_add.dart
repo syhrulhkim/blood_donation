@@ -84,6 +84,7 @@ class _HospitalAddState extends State<HospitalAdd> {
         hospitalName: _nameController.text,
         hospitalContact: _contactController.text,
         hospitalImage: _imageLinkController.text,
+        hospitalPoscode: "",
       );
 
       HospitalAPI().submitHospital(newHospital).then((_) {

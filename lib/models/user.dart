@@ -17,6 +17,7 @@ class Users {
   final String donorType;
   final String donorUsername;
   final String donorWeight;
+  final String donorFcmToken;
 
   Users({
     required this.donorID,
@@ -35,6 +36,7 @@ class Users {
     required this.donorType,
     required this.donorUsername,
     required this.donorWeight,
+    required this.donorFcmToken,
   });
 
   bool isEmpty() {
@@ -53,7 +55,8 @@ class Users {
         donorRole.isEmpty &&
         donorType.isEmpty &&
         donorUsername.isEmpty &&
-        donorWeight.isEmpty;
+        donorWeight.isEmpty &&
+        donorFcmToken.isEmpty;
   }
 
   factory Users.fromJson(Map<String, dynamic> json) {
@@ -74,6 +77,7 @@ class Users {
       donorType: json['donor_Type'] ?? '',
       donorUsername: json['donor_Username'] ?? '',
       donorWeight: json['donor_Weight'] ?? '',
+      donorFcmToken: json['donor_fcmToken'] ?? '',
     );
   }
 
@@ -95,6 +99,7 @@ class Users {
       "donor_Type": donorType,
       "donor_Username": donorUsername,
       "donor_Weight": donorWeight,
+      "donor_fcmToken": donorFcmToken,
     };
   }
 
@@ -117,6 +122,37 @@ class Users {
       donorType: data["donor_Type"],
       donorUsername: data["donor_Username"],
       donorWeight: data["donor_Weight"],
+      donorFcmToken: data["donor_fcmToken"],
     );
   }
 }
+
+class UserNotification {
+  String campaignId;
+  String campaignTitle;
+  String campaignDesc;
+  String campaignDate;
+  String place;
+  String status;
+
+  UserNotification({
+    required this.campaignId,
+    required this.campaignTitle,
+    required this.campaignDesc,
+    required this.campaignDate,
+    required this.place,
+    required this.status,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'campaignId': campaignId,
+      'campaignTitle': campaignTitle,
+      'campaignDesc': campaignDesc,
+      'campaignDate': campaignDate,
+      'place': place,
+      'status': status,
+    };
+  }
+}
+

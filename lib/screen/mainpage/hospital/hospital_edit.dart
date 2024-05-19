@@ -68,6 +68,7 @@ class _HospitalEditState extends State<HospitalEdit> {
       hospitalAddress: address,
       hospitalContact: contact,
       hospitalImage: imageLink,
+      hospitalPoscode: "",
       criticalBloodId: criticalBlood,
     );
 

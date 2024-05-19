@@ -8,6 +8,7 @@ class Hospital {
   final String hospitalName;
   final String hospitalContact;
   final String hospitalImage;
+  final String hospitalPoscode;
 
   const Hospital({
     this.id,
@@ -17,6 +18,7 @@ class Hospital {
     required this.hospitalName,
     required this.hospitalContact,
     required this.hospitalImage,
+    required this.hospitalPoscode,
   });
 
   Hospital copyWith({
@@ -27,6 +29,7 @@ class Hospital {
     String? hospitalName,
     String? hospitalContact,
     String? hospitalImage,
+    String? hospitalPoscode,
   }) {
     return Hospital(
       id: id ?? this.id,
@@ -36,6 +39,7 @@ class Hospital {
       hospitalName: hospitalName ?? this.hospitalName,
       hospitalContact: hospitalContact ?? this.hospitalContact,
       hospitalImage: hospitalImage ?? this.hospitalImage,
+      hospitalPoscode: hospitalPoscode ?? this.hospitalPoscode,
     );
   }
 
@@ -47,6 +51,7 @@ class Hospital {
       "hospital_Name": hospitalName,
       "hospital_Image": hospitalImage,
       "hospital_Contact": hospitalContact,
+      "hospital_Poscode": hospitalPoscode,
     };
   }
 
@@ -69,6 +74,7 @@ class Hospital {
       hospitalName: data["hospital_Name"],
       hospitalContact: data["hospital_Contact"],
       hospitalImage: data["hospital_Image"],
+      hospitalPoscode: data["hospital_Poscode"],
     );
   }
 }

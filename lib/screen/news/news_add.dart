@@ -1,3 +1,4 @@
+import 'package:blood_donation/api/campaign_api.dart';
 import 'package:blood_donation/api/main_api.dart';
 import 'package:blood_donation/api/user_api.dart';
 import 'package:blood_donation/constant.dart';
@@ -5,6 +6,7 @@ import 'package:blood_donation/main.dart';
 import 'package:blood_donation/models/campaign.dart';
 import 'package:blood_donation/models/hospital.dart';
 import 'package:blood_donation/models/user.dart';
+import 'package:blood_donation/screen/news/news.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/theme/custom_theme.dart';
 import 'package:blood_donation/widgets/my_button.dart';
@@ -28,8 +30,8 @@ class _NewsAddState extends State<NewsAdd> {
   late CustomTheme customTheme;
   List<Hospital> hospitalList = [];
   List<Users> userList = [];
-  String? selectedHospital;
-  String? selectedAvailability;
+  late String selectedHospital;
+  late String selectedAvailability;
   late TextEditingController _titleController;
   late TextEditingController _descController;
 
@@ -38,6 +40,8 @@ class _NewsAddState extends State<NewsAdd> {
     super.initState();
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
+    selectedHospital = "";
+    selectedAvailability = "";
     _buildHospitalList();
     _buildUserList();
 
@@ -86,32 +90,98 @@ class _NewsAddState extends State<NewsAdd> {
     });
   }
 
+  getSelectedHospital(hospitalName) {
+    for (var i = 0; i < hospitalList.length; i++) {
+      var hosp = hospitalList[i];
+      if (hospitalName == hosp.hospitalName) {
+        return hosp;
+      }
+    }
+  }
+
+  getSelectedUsers(availability) {
+    print("availability: ${availability == "All"}");
+    switch (availability) {
+      case "All":
+        var getUserList = userList;
+        print("getUserList: ${getUserList}");
+        List<CampaignSendTo> newUserList = [];
+        var userTokenList = [];
+
+        for (var i = 0; i < userList.length; i++) {
+          var eachUser = userList[i];
+          CampaignSendTo listUser = CampaignSendTo(
+            donorID: eachUser.donorID,
+            donorName: eachUser.donorName,
+            campaignStatus: "send",
+            readTime: "",
+          );
+          newUserList.add(listUser);
+          userTokenList.add("\"${eachUser.donorFcmToken}\"");
+        }
+        // send notification to the selected user 
+        pushNotificationsGroupDevice(userTokenList);
+        return newUserList;
+      case "Not Donate":
+        
+        break;
+      case "Donate":
+        
+        break;
+      case "Critical Blood":
+        
+        break;
+    }
+
+  }
+
   buttonCreateAnnouncement() async{
     String title = _titleController.text;
     String description = _descController.text;
-    String? hospital = selectedHospital;
-    String? availability = selectedAvailability;
+    String hospital = selectedHospital;
+    String availability = "All";
+    // String availability = selectedAvailability;
 
-    // Campaign newCampaign = Campaign(
-    //   hospitalID: _nameController.text,
-    //   criticalBloodId: _criticalController.text,
-    //   hospitalAddress: _addressController.text,
-    //   hospitalName: _nameController.text,
-    //   hospitalContact: _contactController.text,
-    //   hospitalImage: _imageLinkController.text,
-    // );
+    try {
+      Hospital selectedHosp = getSelectedHospital(hospital);
+      List<CampaignSendTo> selectedUsers = getSelectedUsers(availability);
+      print("selectedUsers : ${selectedUsers}");
 
-    print("========================================");
-    print("title: ${title}");
-    print("description: ${description}");
-    print("hospital: ${hospital}");
-    print("availability: ${availability}");
-    print("========================================");
+      DateTime now = DateTime.now();
+      String isoDate = now.toIso8601String();
+
+      Campaign newCampaign = Campaign(
+        campaignId: '',
+        campaignDate: isoDate,
+        campaignTitle: title,
+        campaignDesc: description,
+        campaignRequire: availability,
+        place: selectedHosp.hospitalID,
+        postcode: selectedHosp.hospitalPoscode, 
+        timeEnd: '', 
+        timeStart: '', 
+      );
+
+      // store campaign data & notifications users to database
+      CampaignAPI().addCampaignWithUsers(newCampaign,selectedUsers);
+
+      // navigate to add page if succeed
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+            builder: (context) => News()),
+      );
+    } catch (e) {
+      print('Submit failed: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Submit Failed. Please try again'),
+        ),
+      );
+    }
   }
 
   // send to all
   Future<bool> _submitButton({required String title,required String body,}) async {
-    // FirebaseMessaging.instance.subscribeToTopic("myTopic1");
     String dataNotifications = '{ '
         ' "to" : "/topics/myTopic1" , '
         ' "notification" : {'
@@ -134,14 +204,13 @@ class _NewsAddState extends State<NewsAdd> {
   }
 
   // send to certain devices
-  Future<bool> pushNotificationsGroupDevice() async {
-    print("_titleController: ${_titleController.text}");
-    print("_descController: ${_descController.text}");
+  Future<bool> pushNotificationsGroupDevice(userTokenList) async {
+    print("userTokenList: ${userTokenList}");
 
     String dataNotifications = '{'
         '"operation": "create",'
         '"notification_key_name": "appUser-testUser",'
-        '"registration_ids":["eUk1uLdoRW6ZKY09ZadMOn:APA91bG34W_m1TvVvKZmo85xZdy5yGhatNlaO9joe-YvKeLomuMjwe-sSGHGvtHvrVCjBVTQCV15xyy9EbPI6v-D9yEVVfX5p8UuNDEbi67wSeUktSYu2CDMtnBnlyP75OcipeTIazv-","e72nYm3rS3uEcmTdgOEOm9:APA91bGhWPn7IEscWoDBN53AMBj9phyDA0thmUo_k6rTQlmy0t-yLJ1uCUgUWUffAg9Jc0DafnJrMeSV55L-MgnanIo1WVtstz43lUS5ySmXP9h2i1r9Ns0ToS7Q1XbUNTVwv9gC8-_4"],'        
+        '"registration_ids":${userTokenList},'        
         '"notification" : {'
           '"title":"${_titleController.text}",'
           '"body":"${_descController.text}"'
@@ -230,16 +299,16 @@ class _NewsAddState extends State<NewsAdd> {
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         hint: Text(
-                          selectedHospital ?? 'Choose Availability',
+                          selectedAvailability.isEmpty ? 'Choose Availability' : selectedAvailability,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        value: selectedAvailability,
+                        value: selectedAvailability.isEmpty ? null : selectedAvailability,
                         onChanged: (String? value) {
                           setState(() {
-                            selectedAvailability = value;
+                            selectedAvailability = value!;
                           });
                         },
                         items: options.map<DropdownMenuItem<String>>((String value) {
@@ -272,24 +341,16 @@ class _NewsAddState extends State<NewsAdd> {
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         hint: Text(
-                          selectedHospital ?? 'Choose Hospital',
+                          selectedHospital.isEmpty ? 'Choose Hospital' : selectedHospital,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        value: selectedHospitalOptions.isNotEmpty ? selectedHospitalOptions.join(', ') : null,
+                        value: selectedHospital.isEmpty ? null : selectedHospital,
                         onChanged: (String? newValue) {
                           setState(() {
-                            if (newValue != null) {
-                              if (selectedHospitalOptions.contains(newValue)) {
-                                selectedHospitalOptions.remove(newValue);
-                                selectedHospital = null;
-                              } else {
-                                selectedHospitalOptions.add(newValue);
-                                selectedHospital = newValue;
-                              }
-                            }
+                            selectedHospital = newValue!;
                           });
                         },
                         items: hospitalList.map<DropdownMenuItem<String>>((Hospital hospital) {
