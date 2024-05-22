@@ -204,7 +204,7 @@ class _BookingState extends State<Booking> {
       appBar: AppBar(
         centerTitle: true,
         title: MyText.bodyLarge(
-          'My booking',
+          'Appointment',
           fontWeight: 700,
         ),
         elevation: 0,
@@ -223,7 +223,7 @@ class _BookingState extends State<Booking> {
         padding: MySpacing.fromLTRB(24, 8, 24, 24),
         children: [
           MyText.titleMedium(
-            'Available ',
+            'List of appointment',
             letterSpacing: 0.5,
             fontWeight: 700,
           ),

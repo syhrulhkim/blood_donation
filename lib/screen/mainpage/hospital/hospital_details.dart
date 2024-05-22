@@ -3,6 +3,7 @@
 // import 'package:flutkit/full_apps/other/medicare/models/doctor.dart';
 // import 'package:flutkit/full_apps/other/medicare/single_chat_screen.dart';
 import 'package:blood_donation/api/hospital_api.dart';
+import 'package:blood_donation/extensions/string.dart';
 import 'package:blood_donation/models/hospital.dart';
 import 'package:blood_donation/models/user.dart';
 import 'package:blood_donation/screen/mainpage/hospital/hospital_book.dart';
@@ -28,6 +29,7 @@ class HospitalDetails extends StatefulWidget {
 class _HospitalDetailsState extends State<HospitalDetails> {
   late Hospital hospital;
   late Users user;
+  late var bloodLevel;
   late ThemeData theme;
   late CustomTheme customTheme;
   List<bool> isSelected = [false, true, false];
@@ -38,8 +40,9 @@ class _HospitalDetailsState extends State<HospitalDetails> {
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
     hospital = widget.hospital;
+    bloodLevel = widget.hospital.bloodLevels;
     user = widget.user;
-    print("user : ${user.donorRole}");
+    print("hospital : ${hospital}");
   }
 
   deleteHospital(hospitalId) async {
@@ -131,15 +134,34 @@ class _HospitalDetailsState extends State<HospitalDetails> {
   }
 
   Widget criticalBloodLevel() {
+
+    String extractBloodType(String fullName) {
+      List<String> parts = fullName.split('_');
+      String bloodType = parts.last;
+      bloodType = bloodType.substring(0, 1).toUpperCase() + bloodType.substring(1);    
+      return bloodType;
+    }
+
+    Color getColorForPercent(String percents) {
+      var percent = percents.toInt();
+      if (percent >= 0 && percent <= 30) {
+        return Colors.red;
+      } else if (percent >= 31 && percent <= 70) {
+        return const Color.fromARGB(255, 229, 208, 15);
+      } else {
+        return Colors.green;
+      }
+    }
+
     return Container(
       child: Center(
         child: Container(
           width: double.infinity,
           child: Wrap(
-            spacing: 5.0, // Spacing between containers
-            runSpacing: 10.0, // Spacing between rows of containers
+            spacing: 5.0, 
+            runSpacing: 10.0,
             children: List.generate(
-              8, // Number of containers
+              bloodLevel.length,
               (index) => Container(
                 width: 75,
                 height: 40,
@@ -149,28 +171,29 @@ class _HospitalDetailsState extends State<HospitalDetails> {
                     color: Colors.white,
                     border: Border.all(
                       width: 0.5,
-                    )
+                    ),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(5,5,5,5),
-                    child: Row(
-                      children: [
-                        MyContainer(
-                          paddingAll: 4,
-                          child: Text("O-")
-                        ),
-                        SizedBox(width: MediaQuery.of(context).size.width * 0.01),
-                        MyContainer(
-                          color: Colors.green,
-                          paddingAll: 4,
-                          child: Text(
-                            "75%",
-                            style: TextStyle(
-                              color: Colors.white
+                    padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                    child: SingleChildScrollView( // Wrapping with SingleChildScrollView
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          MyContainer(
+                            paddingAll: 4,
+                            child: Text("${extractBloodType(bloodLevel[index].bloodType)}"),
+                          ),
+                          SizedBox(width: MediaQuery.of(context).size.width * 0.01),
+                          MyContainer(
+                            color: getColorForPercent(bloodLevel[index].percent),
+                            paddingAll: 4,
+                            child: Text(
+                              "${bloodLevel[index].percent}%",
+                              style: TextStyle(color: Colors.white),
                             ),
-                          )
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

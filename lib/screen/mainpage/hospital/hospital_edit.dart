@@ -20,6 +20,7 @@ class HospitalEdit extends StatefulWidget {
 
 class _HospitalEditState extends State<HospitalEdit> {
   late Hospital hospital;
+  late var bloodLevel;
   late ThemeData theme;
   late CustomTheme customTheme;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -28,6 +29,15 @@ class _HospitalEditState extends State<HospitalEdit> {
   late TextEditingController _addressController;
   late TextEditingController _contactController;
   late TextEditingController _imageLinkController;
+  // blood levels
+  late TextEditingController _aPlusController;
+  late TextEditingController _aMinusController;
+  late TextEditingController _abPlusController;
+  late TextEditingController _abMinusController;
+  late TextEditingController _bPlusController;
+  late TextEditingController _bMinusController;
+  late TextEditingController _oPlusController;
+  late TextEditingController _oMinusController;
 
   @override
   void initState() {
@@ -35,11 +45,21 @@ class _HospitalEditState extends State<HospitalEdit> {
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
     hospital = widget.hospital;
+    bloodLevel = widget.hospital.bloodLevels;
     _nameController = TextEditingController();
     _criticalController = TextEditingController();
     _addressController = TextEditingController();
     _contactController = TextEditingController();
     _imageLinkController = TextEditingController();
+    // blood levels
+    _aPlusController = TextEditingController();
+    _aMinusController = TextEditingController();
+    _abPlusController = TextEditingController();
+    _abMinusController = TextEditingController();
+    _bPlusController = TextEditingController();
+    _bMinusController = TextEditingController();
+    _oPlusController = TextEditingController();
+    _oMinusController = TextEditingController();
   }
 
   @override
@@ -49,43 +69,57 @@ class _HospitalEditState extends State<HospitalEdit> {
     _addressController.dispose();
     _contactController.dispose();
     _imageLinkController.dispose();
+    // blood levels
+    _aPlusController.dispose();
+    _aMinusController.dispose();
+    _abPlusController.dispose();
+    _abMinusController.dispose();
+    _bPlusController.dispose();
+    _bMinusController.dispose();
+    _oPlusController.dispose();
+    _oMinusController.dispose();
     super.dispose();
   }
 
   void _editForm() {
-    // Remove the validation check
-    // Use the existing data if the user does not input anything
     String name = _nameController.text.isNotEmpty ? _nameController.text : widget.hospital.hospitalName;
     String address = _addressController.text.isNotEmpty ? _addressController.text : widget.hospital.hospitalAddress;
     String contact = _contactController.text.isNotEmpty ? _contactController.text : widget.hospital.hospitalContact;
     String imageLink = _imageLinkController.text.isNotEmpty ? _imageLinkController.text : widget.hospital.hospitalImage;
-    String criticalBlood = _criticalController.text.isNotEmpty ? _criticalController.text : widget.hospital.criticalBloodId;
+
+    List<BloodLevel> bloodLevel = [
+      BloodLevel(bloodType: 'blood_a+', percent: _aPlusController.text),
+      BloodLevel(bloodType: 'blood_a-', percent: _aMinusController.text),
+      BloodLevel(bloodType: 'blood_ab+', percent: _abPlusController.text),
+      BloodLevel(bloodType: 'blood_ab-', percent: _abMinusController.text),
+      BloodLevel(bloodType: 'blood_b+', percent: _bPlusController.text),
+      BloodLevel(bloodType: 'blood_b-', percent: _bMinusController.text),
+      BloodLevel(bloodType: 'blood_o+', percent: _oPlusController.text),
+      BloodLevel(bloodType: 'blood_o-', percent: _oMinusController.text),
+    ];
 
     // Create a new Hospital object with the updated data
     Hospital newHospital = Hospital(
-      hospitalID: widget.hospital.hospitalID, // Keep the existing hospital ID
+      hospitalID: widget.hospital.hospitalID, 
       hospitalName: name,
       hospitalAddress: address,
       hospitalContact: contact,
       hospitalImage: imageLink,
-      hospitalPoscode: "",
-      criticalBloodId: criticalBlood,
+      hospitalPoscode: "", 
+      bloodLevels: bloodLevel
     );
 
     // Call the API to update the hospital data
     HospitalAPI().updateHospital(newHospital).then((_) {
-      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Hospital updated successfully')),
       );
       
-      // Navigate back to the previous page
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MainPage()),
       );
     }).catchError((error) {
-      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to update hospital: $error')),
       );
@@ -196,21 +230,137 @@ class _HospitalEditState extends State<HospitalEdit> {
                           return null;
                         },
                       ),
-                      TextFormField(
-                        controller: _criticalController,
-                        decoration: InputDecoration(
-                          labelText: "${widget.hospital.criticalBloodId}",
-                          border: theme.inputDecorationTheme.border,
-                          enabledBorder: theme.inputDecorationTheme.border,
-                          focusedBorder: theme.inputDecorationTheme.focusedBorder,
-                          prefixIcon: Icon(LucideIcons.plus, size: 24),
+                      SizedBox(height: 36),
+                      Container(
+                        padding: EdgeInsets.only(
+                            left: 0, right: 20, top: 0, bottom: 12),
+                        child: MyText.titleMedium("Critical Blood Level Percentage", fontWeight: 600),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: EdgeInsets.only(top: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 1,
+                              child: TextFormField(
+                                controller: _aPlusController,
+                                decoration: InputDecoration(
+                                  labelText: "A+",
+                                  border: theme.inputDecorationTheme.border,
+                                  enabledBorder: theme.inputDecorationTheme.border,
+                                  focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: TextFormField(
+                                  controller: _aMinusController,
+                                  decoration: InputDecoration(
+                                    labelText: "A-",
+                                    border: theme.inputDecorationTheme.border,
+                                    enabledBorder: theme.inputDecorationTheme.border,
+                                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: TextFormField(
+                                  controller: _abPlusController,
+                                  decoration: InputDecoration(
+                                    labelText: "AB+",
+                                    border: theme.inputDecorationTheme.border,
+                                    enabledBorder: theme.inputDecorationTheme.border,
+                                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: TextFormField(
+                                  controller: _abMinusController,
+                                  decoration: InputDecoration(
+                                    labelText: "AB-",
+                                    border: theme.inputDecorationTheme.border,
+                                    enabledBorder: theme.inputDecorationTheme.border,
+                                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: TextFormField(
+                                  controller: _bPlusController,
+                                  decoration: InputDecoration(
+                                    labelText: "B+",
+                                    border: theme.inputDecorationTheme.border,
+                                    enabledBorder: theme.inputDecorationTheme.border,
+                                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: TextFormField(
+                                  controller: _bMinusController,
+                                  decoration: InputDecoration(
+                                    labelText: "B-",
+                                    border: theme.inputDecorationTheme.border,
+                                    enabledBorder: theme.inputDecorationTheme.border,
+                                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: TextFormField(
+                                  controller: _oPlusController,
+                                  decoration: InputDecoration(
+                                    labelText: "O+",
+                                    border: theme.inputDecorationTheme.border,
+                                    enabledBorder: theme.inputDecorationTheme.border,
+                                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: TextFormField(
+                                  controller: _oMinusController,
+                                  decoration: InputDecoration(
+                                    labelText: "O-",
+                                    border: theme.inputDecorationTheme.border,
+                                    enabledBorder: theme.inputDecorationTheme.border,
+                                    focusedBorder: theme.inputDecorationTheme.focusedBorder,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter hospital critical blood';
-                          }
-                          return null;
-                        },
                       ),
                       SizedBox(height: 16),
                       MyButton.block(

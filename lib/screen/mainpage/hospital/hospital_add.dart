@@ -23,10 +23,10 @@ class _HospitalAddState extends State<HospitalAdd> {
   late CustomTheme customTheme;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
-  late TextEditingController _criticalController;
   late TextEditingController _addressController;
   late TextEditingController _contactController;
   late TextEditingController _imageLinkController;
+  // blood levels
   late TextEditingController _aPlusController;
   late TextEditingController _aMinusController;
   late TextEditingController _abPlusController;
@@ -42,10 +42,10 @@ class _HospitalAddState extends State<HospitalAdd> {
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
     _nameController = TextEditingController();
-    _criticalController = TextEditingController();
     _addressController = TextEditingController();
     _contactController = TextEditingController();
     _imageLinkController = TextEditingController();
+    // blood levels
     _aPlusController = TextEditingController();
     _aMinusController = TextEditingController();
     _abPlusController = TextEditingController();
@@ -59,10 +59,10 @@ class _HospitalAddState extends State<HospitalAdd> {
   @override
   void dispose() {
     _nameController.dispose();
-    _criticalController.dispose();
     _addressController.dispose();
     _contactController.dispose();
     _imageLinkController.dispose();
+    // blood levels
     _aPlusController.dispose();
     _aMinusController.dispose();
     _abPlusController.dispose();
@@ -74,20 +74,32 @@ class _HospitalAddState extends State<HospitalAdd> {
     super.dispose();
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Form is valid, submit data to Firestore
+      List<BloodLevel> bloodLevel = [
+        BloodLevel(bloodType: 'blood_a+', percent: _aPlusController.text),
+        BloodLevel(bloodType: 'blood_a-', percent: _aMinusController.text),
+        BloodLevel(bloodType: 'blood_ab+', percent: _abPlusController.text),
+        BloodLevel(bloodType: 'blood_ab-', percent: _abMinusController.text),
+        BloodLevel(bloodType: 'blood_b+', percent: _bPlusController.text),
+        BloodLevel(bloodType: 'blood_b-', percent: _bMinusController.text),
+        BloodLevel(bloodType: 'blood_o+', percent: _oPlusController.text),
+        BloodLevel(bloodType: 'blood_o-', percent: _oMinusController.text),
+      ];
+
       Hospital newHospital = Hospital(
         hospitalID: _nameController.text,
-        criticalBloodId: _criticalController.text,
         hospitalAddress: _addressController.text,
         hospitalName: _nameController.text,
         hospitalContact: _contactController.text,
         hospitalImage: _imageLinkController.text,
-        hospitalPoscode: "",
+        hospitalPoscode: "", 
+        bloodLevels: bloodLevel,
       );
 
-      HospitalAPI().submitHospital(newHospital).then((_) {
+      try {
+        await HospitalAPI().submitHospital(newHospital);
+
         _formKey.currentState!.reset();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Hospital added successfully')),
@@ -96,11 +108,11 @@ class _HospitalAddState extends State<HospitalAdd> {
           context,
           MaterialPageRoute(builder: (context) => MainPage()),
         );
-      }).catchError((error) {
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add hospital: $error')),
+          SnackBar(content: Text('Failed to add hospital: $e')),
         );
-      });
+      }
     }
   }
 
@@ -142,7 +154,7 @@ class _HospitalAddState extends State<HospitalAdd> {
                       Container(
                         padding: EdgeInsets.only(
                             left: 0, right: 20, top: 0, bottom: 12),
-                        child: MyText.titleMedium("Add New Hospital", fontWeight: 600),
+                        child: MyText.titleMedium("+ Hospital", fontWeight: 600),
                       ),
                       TextFormField(
                         controller: _nameController,
@@ -204,22 +216,6 @@ class _HospitalAddState extends State<HospitalAdd> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter hospital image link';
-                          }
-                          return null;
-                        },
-                      ),
-                      TextFormField(
-                        controller: _criticalController,
-                        decoration: InputDecoration(
-                          labelText: "Hospital Critical Blood",
-                          border: theme.inputDecorationTheme.border,
-                          enabledBorder: theme.inputDecorationTheme.border,
-                          focusedBorder: theme.inputDecorationTheme.focusedBorder,
-                          prefixIcon: Icon(LucideIcons.plus, size: 24),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter hospital critical blood';
                           }
                           return null;
                         },

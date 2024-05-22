@@ -7,7 +7,13 @@ class MainAPI {
 
   Future<List<Hospital>> allHospital() async {
     final snapshot = await _db.collection("hospital").get();
-    final data = snapshot.docs.map((e) => Hospital.fromSnapshot(e)).toList();
-    return data;
+    final data = snapshot.docs.map((e) async {
+      Hospital hospital = Hospital.fromSnapshot(e);
+      QuerySnapshot bloodLevelSnapshot = await e.reference.collection("blood_level").get();
+      hospital.bloodLevels = bloodLevelSnapshot.docs.map((doc) => BloodLevel.fromSnapshot(doc)).toList();
+      return hospital;
+    }).toList();
+
+    return Future.wait(data);
   }
 }

@@ -29,11 +29,16 @@ class HospitalAPI {
 
   Future<void> submitHospital(Hospital hospital) async {
     try {
-      String nextHospitalID = await getNextHospitalID(); // Get the next hospital ID
-      hospital = hospital.copyWith(hospitalID: nextHospitalID); // Update hospital object with the new ID
+      String nextHospitalID = await getNextHospitalID();
+      hospital = hospital.copyWith(hospitalID: nextHospitalID);
       Map<String, dynamic> hospitalData = hospital.toJson();
-      // Add the hospital data to a document named after the hospitalID within the "hospitals" collection
       await _db.collection("hospital").doc(nextHospitalID).set(hospitalData);
+
+      for (var i = 0; i < hospital.bloodLevels.length; i++) {
+        var eachBlood = hospital.bloodLevels[i];
+        await addBloodLevel(nextHospitalID, eachBlood);
+      }
+
       print("Hospital data submitted successfully");
     } catch (error) {
       print("Error submitting hospital data: $error");
@@ -41,16 +46,39 @@ class HospitalAPI {
     }
   }
 
+  Future<void> addBloodLevel(String hospitalID, BloodLevel bloodLevel) async {
+    try {
+      await _db.collection('hospital').doc(hospitalID).collection('blood_level').doc(bloodLevel.bloodType).set(bloodLevel.toJson());
+      print("Blood level added successfully");
+    } catch (error) {
+      print("Error adding blood level: $error");
+      throw Exception("Failed to add blood level");
+    }
+  }
+
   Future<void> updateHospital(Hospital hospital) async {
     try {
-      // Convert Hospital object to a Map
       Map<String, dynamic> hospitalData = hospital.toJson();
-      // Update the hospital data in the Firestore collection
       await _db.collection("hospital").doc(hospital.hospitalID).update(hospitalData);
+      
+      for (var i = 0; i < hospital.bloodLevels.length; i++) {
+        var bloodLevel = hospital.bloodLevels[i];
+        await updateBloodLevel(hospital.hospitalID, bloodLevel);
+      }
       print("Hospital data updated successfully");
     } catch (error) {
       print("Error updating hospital data: $error");
       throw Exception("Failed to update hospital data");
+    }
+  }
+
+  Future<void> updateBloodLevel(String hospitalID, BloodLevel bloodLevel) async {
+    try {
+      await _db.collection('hospital').doc(hospitalID).collection('blood_level').doc(bloodLevel.bloodType).update(bloodLevel.toJson());
+      print("Blood level updated successfully");
+    } catch (error) {
+      print("Error updating blood level: $error");
+      throw Exception("Failed to update blood level");
     }
   }
 

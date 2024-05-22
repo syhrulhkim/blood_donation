@@ -57,6 +57,8 @@ class _LoginPageState extends State<LoginPage> {
         if (userData != null) {
           await FirebaseAPI().initNotifications(userData);
           await _storeUserData(userData);
+        } else {
+          await FirebaseAPI().initNotifications(userData);
         }
       } else {
         print('Error: Unexpected user data format');
