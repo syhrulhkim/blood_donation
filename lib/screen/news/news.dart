@@ -1,13 +1,13 @@
-import 'package:blood_donation/models/doctor.dart';
-import 'package:blood_donation/models/schedule.dart';
+import 'package:blood_donation/api/campaign_api.dart';
+import 'package:blood_donation/models/campaign.dart';
 import 'package:blood_donation/screen/news/news_add.dart';
+import 'package:blood_donation/screen/news/news_details.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_container.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
-import 'package:blood_donation/widgets/my_star_rating.dart';
 import 'package:blood_donation/widgets/my_text.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class News extends StatefulWidget {
   const News({super.key});
@@ -17,188 +17,165 @@ class News extends StatefulWidget {
 }
 
 class _NewsState extends State<News> {
-  List<Schedule> upcomingList = [];
-  List<Schedule> completedList = [];
-  List<Doctor> doctorList = [];
   late ThemeData theme;
   late CustomTheme customTheme;
+  List<Campaign> newsList = [];
 
   @override
   void initState() {
     super.initState();
-    upcomingList = Schedule.upComingList();
-    completedList = Schedule.completedList();
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
-    doctorList = Doctor.doctorList();
+    _buildCampaignList();
   }
 
-  Widget _buildSingleEvent(Schedule schedule, {bool old = false}) {
-    return MyContainer.bordered(
-      paddingAll: 16,
-      borderRadiusAll: 16,
-      child: Row(
-        children: [
-          MyContainer(
-            width: 56,
-            padding: MySpacing.y(12),
-            borderRadiusAll: 4,
-            bordered: true,
-            border: Border.all(color: customTheme.medicarePrimary),
-            color: old
-                ? Colors.transparent
-                : customTheme.medicarePrimary.withAlpha(60),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  MyText.bodyMedium(
-                    schedule.date.toString(),
-                    fontWeight: 700,
-                    color: customTheme.medicarePrimary,
-                  ),
-                  MyText.bodySmall(
-                    schedule.month,
-                    fontWeight: 600,
-                    color: customTheme.medicarePrimary,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          MySpacing.width(16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                MyText.bodySmall(
-                  schedule.event,
-                  fontWeight: 600,
-                ),
-                MySpacing.height(4),
-                MyText.bodySmall(
-                  schedule.time,
-                  fontSize: 10,
-                ),
-                MySpacing.height(4),
-                MyText.bodySmall(
-                  schedule.doctorName,
-                  fontSize: 10,
-                ),
-              ],
-            ),
-          ),
-          MySpacing.width(16),
-          MyContainer.rounded(
-            paddingAll: 4,
-            color: customTheme.card,
-            child: Icon(
-              old ? Icons.call_outlined : Icons.videocam_outlined,
-              size: 16,
-              color: theme.colorScheme.onBackground,
-            ),
-          ),
-        ],
-      ),
-    );
+  _buildCampaignList() async{
+    CampaignAPI campaignAPI = CampaignAPI();
+    List<Campaign> list = await campaignAPI.allCampaign();
+    setState(() {
+      newsList = list;
+    });
   }
 
-  List<Widget> _buildDoctorList() {
-    List<Widget> list = [];
-
-    list.add(MySpacing.width(16));
-
-    for (int i = 0; i < doctorList.length; i++) {
-      list.add(_buildSingleDoctor(doctorList[i]));
+  String extractDay(String dateTimeString) {
+    List<String> parts = dateTimeString.split('T');
+    if (parts.length != 2) {
+      throw FormatException("Invalid date time string format");
+    }      
+    String datePart = parts[0];
+    List<String> dateParts = datePart.split('-');
+    if (dateParts.length != 3) {
+      throw FormatException("Invalid date format");
     }
-    return list;
+    return dateParts[2];
   }
 
-  Widget _buildSingleDoctor(Doctor doctor) {
-    return MyContainer(
-      onTap: () {
-        // Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-        //     builder: (context) => MediCareSingleDoctorScreen(doctor)));
-      },
-      margin: MySpacing.fromLTRB(0, 0, 0, 16),
-      paddingAll: 16,
-      borderRadiusAll: 8,
-      child: Row(
+  String extractMonth(String dateTimeString) {
+    List<String> parts = dateTimeString.split('T');
+    if (parts.length != 2) {
+      throw FormatException("Invalid date time string format");
+    }
+    String datePart = parts[0];
+    List<String> dateParts = datePart.split('-');
+    if (dateParts.length != 3) {
+      throw FormatException("Invalid date format");
+    }
+    int? month = int.tryParse(dateParts[1]);
+    if (month == null || month < 1 || month > 12) {
+      throw FormatException("Invalid month");
+    }
+    List<String> months = [
+      "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];      
+    return months[month];
+  }
+
+  String formatTime(String dateTimeString) {
+    DateTime dateTime = DateTime.parse(dateTimeString);
+    String formattedTime = DateFormat.jm().format(dateTime);
+    return formattedTime;
+  }
+
+  Widget _buildAllCampaign() {
+    if (newsList.isEmpty) {
+      return Column(
         children: [
-          MyContainer(
-            paddingAll: 0,
-            borderRadiusAll: 8,
-            child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-              child: Image(
-                width: 72,
-                height: 72,
-                image: AssetImage(doctor.image),
-              ),
-            ),
-          ),
-          MySpacing.width(16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                MyText.bodyLarge(
-                  doctor.name,
-                  fontWeight: 600,
-                ),
-                MySpacing.height(4),
-                MyText.bodySmall(
-                  doctor.category,
-                  xMuted: true,
-                ),
-                MySpacing.height(12),
-                Row(
+          CircularProgressIndicator(),
+        ],
+      );
+    } else {
+      return Column(
+        children: List.generate(newsList.length, (index) {
+          final campaignList = newsList[index];
+          return Column(
+            children: [
+              MyContainer.bordered(
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+                      builder: (context) => NewDetails(campaignList)));
+                },
+                paddingAll: 16,
+                borderRadiusAll: 16,
+                child: Row(
                   children: [
-                    MyStarRating(
-                      rating: doctor.ratings,
-                      showInactive: true,
-                      size: 15,
-                      inactiveColor:
-                          theme.colorScheme.onBackground.withAlpha(180),
+                    MyContainer(
+                      width: 56,
+                      padding: MySpacing.y(12),
+                      borderRadiusAll: 4,
+                      bordered: true,
+                      border: Border.all(color: customTheme.medicarePrimary),
+                      color: customTheme.medicarePrimary.withAlpha(20),
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            MyText.bodyMedium(
+                              "${extractDay(campaignList.campaignDate)}",
+                              fontWeight: 700,
+                              color: customTheme.medicarePrimary,
+                            ),
+                            MyText.bodySmall(
+                              "${extractMonth(campaignList.campaignDate)}",
+                              fontWeight: 600,
+                              color: customTheme.medicarePrimary,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    MySpacing.width(4),
-                    MyText.bodySmall(
-                      '${doctor.ratings} | ${doctor.reviews} Reviews',
-                      xMuted: true,
+                    MySpacing.width(16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          MyText.bodySmall(
+                            "${campaignList.campaignTitle}",
+                            fontWeight: 600,
+                          ),
+                          MySpacing.height(4),
+                          MyText.bodySmall(
+                            "${campaignList.campaignDesc}",
+                            fontSize: 11,
+                          ),
+                          MySpacing.height(4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              MyText.bodySmall(
+                                "Send to: ${campaignList.campaignRequire}",
+                                fontSize: 9,
+                              ),
+                              MyText.bodySmall(
+                                "Time: ${formatTime(campaignList.campaignDate)}",
+                                fontSize: 9,
+                              ),
+                            ],  
+                          ),
+                        ],
+                      ),
+                    ),
+                    MySpacing.width(16),
+                    MyContainer.rounded(
+                      paddingAll: 4,
+                      color: customTheme.card,
+                      child: Icon(
+                        Icons.navigate_next,
+                        size: 16,
+                        color: theme.colorScheme.onBackground,
+                      ),
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  List<Widget> _buildUpcomingList() {
-    List<Widget> list = [];
-
-    for (int i = 0; i < upcomingList.length; i++) {
-      list.add(_buildSingleEvent(upcomingList[i]));
-
-      if (i + 1 < upcomingList.length) list.add(MySpacing.height(16));
+              ),
+              SizedBox(height: 5),
+            ],
+          );
+        }),
+      );
     }
-    return list;
   }
 
-  List<Widget> _buildCompletedList() {
-    List<Widget> list = [];
-
-    list.add(MySpacing.width(16));
-
-    for (int i = 0; i < completedList.length; i++) {
-      list.add(_buildSingleEvent(completedList[i], old: true));
-
-      if (i + 1 < completedList.length) list.add(MySpacing.height(16));
-    }
-    return list;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -236,9 +213,7 @@ class _NewsState extends State<News> {
             fontWeight: 700,
           ),
           MySpacing.height(16),
-          // Column(
-          //   children: _buildDoctorList(),
-          // ),
+          _buildAllCampaign(),
         ],
       ),
     );

@@ -11,8 +11,9 @@ class Campaign {
   final String postcode;
   final String timeEnd;
   final String timeStart;
+  List<CampaignSendTo> campaignSend;
 
-  const Campaign({
+  Campaign({
     this.id,
     required this.campaignId,
     required this.campaignDate,
@@ -23,6 +24,7 @@ class Campaign {
     required this.postcode,
     required this.timeEnd,
     required this.timeStart,
+    required this.campaignSend,
   });
 
   Campaign copyWith({
@@ -36,6 +38,7 @@ class Campaign {
     String? postcode,
     String? timeEnd,
     String? timeStart,
+    List<CampaignSendTo>? campaignSend,
   }) {
     return Campaign(
       id: id ?? this.id,
@@ -48,6 +51,7 @@ class Campaign {
       postcode: postcode ?? this.postcode,
       timeEnd: timeEnd ?? this.timeEnd,
       timeStart: timeStart ?? this.timeStart,
+      campaignSend: campaignSend ?? this.campaignSend,
     );
   }
 
@@ -67,10 +71,16 @@ class Campaign {
 
   static Future<List<Campaign>> hospitalList() async {
     final _db = FirebaseFirestore.instance;
-    List<Campaign> list = [];
     final snapshot = await _db.collection("campaign").get();
-    final data = snapshot.docs.map((e) => Campaign.fromSnapshot(e)).toList();
-    return list;
+    final List<Campaign> lists = [];
+
+    for (final doc in snapshot.docs) {
+      final campaign = Campaign.fromSnapshot(doc);
+      final campaignSendSnapshot = await doc.reference.collection("campaignSendTo").get();
+      campaign.campaignSend = campaignSendSnapshot.docs.map((doc) => CampaignSendTo.fromSnapshot(doc)).toList();
+      lists.add(campaign);
+    }
+    return lists;
   }
 
   factory Campaign.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> document) {
@@ -86,6 +96,7 @@ class Campaign {
       postcode: data["postcode"],
       timeEnd: data["timeEnd"],
       timeStart: data["timeStart"],
+      campaignSend: [],
     );
   }
 
@@ -124,5 +135,15 @@ class CampaignSendTo {
       'campaignStatus': campaignStatus,
       'readTime': readTime,
     };
+  }
+
+  factory CampaignSendTo.fromSnapshot(QueryDocumentSnapshot<Object?> document) {
+    final data = document.data() as Map<String, dynamic>;
+    return CampaignSendTo(
+      donorID: data['donorID'],
+      donorName: data['donor_Name'],
+      campaignStatus: data['campaignStatus'],
+      readTime: data['readTime'],
+    );
   }
 }

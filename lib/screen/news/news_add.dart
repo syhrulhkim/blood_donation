@@ -160,6 +160,7 @@ class _NewsAddState extends State<NewsAdd> {
         postcode: selectedHosp.hospitalPoscode, 
         timeEnd: '', 
         timeStart: '', 
+        campaignSend: [],
       );
 
       // store campaign data & notifications users to database

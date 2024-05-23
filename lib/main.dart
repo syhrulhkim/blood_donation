@@ -1,4 +1,3 @@
-import 'package:blood_donation/api/firebase_api.dart';
 import 'package:blood_donation/auth/login.dart';
 import 'package:blood_donation/screen/mainpage/mainpage.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
@@ -6,10 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:http/http.dart' as http;
-import 'package:blood_donation/constant.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 const AndroidNotificationChannel channel = AndroidNotificationChannel(

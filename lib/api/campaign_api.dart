@@ -7,6 +7,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class CampaignAPI {
   final _db = FirebaseFirestore.instance;
 
+  Future<List<Campaign>> allCampaign() async {
+    final snapshot = await _db.collection("campaign").get();
+    final data = snapshot.docs.map((e) async {
+      Campaign campaign = Campaign.fromSnapshot(e);
+      QuerySnapshot campaignSnapshot = await e.reference.collection("campaignSendTo").get();
+      campaign.campaignSend = campaignSnapshot.docs.map((doc) => CampaignSendTo.fromSnapshot(doc)).toList();
+      return campaign;
+    }).toList();
+
+    return Future.wait(data);
+  }
+
   Future<String> getNextCampaignID() async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot =
