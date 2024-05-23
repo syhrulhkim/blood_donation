@@ -7,14 +7,14 @@ import 'package:blood_donation/widgets/my_star_rating.dart';
 import 'package:blood_donation/widgets/my_text.dart';
 import 'package:flutter/material.dart';
 
-class Booking extends StatefulWidget {
-  const Booking({super.key});
+class BookingUser extends StatefulWidget {
+  const BookingUser({super.key});
 
   @override
-  State<Booking> createState() => _BookingState();
+  State<BookingUser> createState() => _BookingState();
 }
 
-class _BookingState extends State<Booking> {
+class _BookingState extends State<BookingUser> {
   List<Schedule> upcomingList = [];
   List<Schedule> completedList = [];
   List<Doctor> doctorList = [];

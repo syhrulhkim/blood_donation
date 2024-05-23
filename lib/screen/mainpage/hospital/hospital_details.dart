@@ -14,7 +14,6 @@ import 'package:blood_donation/widgets/my_button.dart';
 import 'package:blood_donation/widgets/my_container.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
 import 'package:blood_donation/widgets/my_text.dart';
-import 'package:blood_donation/widgets/my_text_style.dart';
 import 'package:flutter/material.dart';
 
 class HospitalDetails extends StatefulWidget {
@@ -72,7 +71,7 @@ class _HospitalDetailsState extends State<HospitalDetails> {
               elevation: 0,
               borderRadiusAll: 8,
               padding: MySpacing.y(20),
-              backgroundColor: AppTheme.customTheme.medicarePrimary,
+              backgroundColor: Colors.blueAccent,
               onPressed: () {
                 Navigator.push(
                   context,
@@ -262,64 +261,6 @@ class _HospitalDetailsState extends State<HospitalDetails> {
                       color: theme.colorScheme.onBackground,
                       xMuted: true,
                     ),
-                    MySpacing.height(12),
-                    Row(
-                      children: [
-                        MyContainer(
-                          paddingAll: 8,
-                          child: Icon(
-                            Icons.star_rounded,
-                            color: AppTheme.customTheme.colorWarning,
-                          ),
-                        ),
-                        MySpacing.width(16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            MyText.bodySmall(
-                              'Rating',
-                              color: theme.colorScheme.onBackground,
-                              xMuted: true,
-                            ),
-                            MySpacing.height(2),
-                            MyText.bodySmall(
-                              '4 out of 5',
-                              color: theme.colorScheme.onBackground,
-                              fontWeight: 700,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    MySpacing.height(8),
-                    Row(
-                      children: [
-                        MyContainer(
-                          paddingAll: 8,
-                          child: Icon(
-                            Icons.group,
-                            color: CustomTheme.blue,
-                          ),
-                        ),
-                        MySpacing.width(16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            MyText.bodySmall(
-                              'Patients',
-                              color: theme.colorScheme.onBackground,
-                              xMuted: true,
-                            ),
-                            MySpacing.height(2),
-                            MyText.bodySmall(
-                              '1000+',
-                              color: theme.colorScheme.onBackground,
-                              fontWeight: 700,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -338,25 +279,6 @@ class _HospitalDetailsState extends State<HospitalDetails> {
                 ),
                 MySpacing.height(5),
                 criticalBloodLevel(),
-                MySpacing.height(24),
-                MyText.bodyLarge(
-                  'Location',
-                  fontWeight: 600,
-                ),
-                MySpacing.height(16),
-                MyContainer(
-                  paddingAll: 0,
-                  borderRadiusAll: 16,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(16)),
-                    child: Image(
-                      fit: BoxFit.cover,
-                      height: 140,
-                      width: MediaQuery.of(context).size.width - 96,
-                      image: AssetImage('assets/other/map-md-snap.png'),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

@@ -54,7 +54,7 @@ class Appointment {
     return Appointment(
       id: document.id,
       appointmentID: data["appointmentID"],
-      appointmentDate: data["appointment_Date"],
+      appointmentDate: (data["appointment_Date"] as Timestamp).toDate(),
       donorID: data["donorID"],
       place: data["place"],
     );

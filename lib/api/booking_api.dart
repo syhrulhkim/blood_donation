@@ -5,6 +5,45 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class BookingAPI {
   final _db = FirebaseFirestore.instance;
 
+  Future<List<Map<String, dynamic>>> appointmentList() async {
+    final _db = FirebaseFirestore.instance;
+    final snapshot = await _db.collection("appointment").get();
+
+    List<Map<String, dynamic>> appointments = await Future.wait(snapshot.docs.map((doc) async {
+      Map<String, dynamic> appointmentData = doc.data();
+      appointmentData['id'] = doc.id;
+
+      // Initialize nested data structures
+      Map<String, dynamic> donorData = {};
+      Map<String, dynamic> hospitalData = {};
+
+      // Fetching donor data
+      if (appointmentData['donorID'] != null && appointmentData['donorID'].isNotEmpty) {
+        DocumentSnapshot donorSnapshot = await _db.collection("user").doc(appointmentData['donorID']).get();
+        if (donorSnapshot.exists) {
+          donorData = donorSnapshot.data() as Map<String, dynamic>;
+          // print("donorData: $donorData");
+        }
+      }
+
+      // Fetching hospital data
+      if (appointmentData['place'] != null && appointmentData['place'].isNotEmpty) {
+        DocumentSnapshot hospitalSnapshot = await _db.collection("hospital").doc(appointmentData['place']).get();
+        if (hospitalSnapshot.exists) {
+          hospitalData = hospitalSnapshot.data() as Map<String, dynamic>;
+          // print("hospitalData: $hospitalData");
+        }
+      }
+
+      // Embed donor and hospital data in the appointment data
+      appointmentData['user'] = donorData;
+      appointmentData['hospital'] = hospitalData;
+
+      return appointmentData;
+    }).toList());
+    return appointments;
+  }
+
   Future<String> getNextAppointmentID() async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await _db.collection("appointment").orderBy("appointmentID", descending: true).limit(1).get();
@@ -23,23 +62,6 @@ class BookingAPI {
     }
   }
 
-  // TODO
-  // Future<void> submitAppointment(Appointment appointment) async {
-  //   try {
-  //     String nextAppointmentID = await getNextAppointmentID();
-  //     print("nextAppointmentID : ${nextAppointmentID}");
-  //     appointment = appointment.copyWith(appointmentID: nextAppointmentID);
-  //     Map<String, dynamic> appointmentData = appointment.toJson();
-
-  //     await _db.collection("appointment").doc(nextAppointmentID).set(appointmentData);
-
-  //     print("Hospital data submitted successfully");
-  //   } catch (error) {
-  //     print("Error submitting hospital data: $error");
-  //     throw Exception("Failed to submit hospital data");
-  //   }
-  // }
-
   Future<void> submitAppointment(DateTime appointmentDate, String userId, String hospitalID) async {
     try {
       String nextAppointmentID = await getNextAppointmentID();
@@ -50,11 +72,7 @@ class BookingAPI {
         place: hospitalID,
       );
       Map<String, dynamic> appointmentData = appointment.toJson();
-
-      // Store the appointment in the "appointments" collection
       await _db.collection("appointment").doc(nextAppointmentID).set(appointmentData);
-
-      // Update user information
       await _db.collection("user").doc(userId).update({
         'donor_LatestDonate': appointmentDate.toIso8601String(),
         'donor_Availability': 'donated',

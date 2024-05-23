@@ -6,7 +6,8 @@ import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:blood_donation/auth/nonuser.dart';
-import 'package:blood_donation/screen/booking/booking.dart';
+import 'package:blood_donation/screen/booking/booking_admin.dart';
+import 'package:blood_donation/screen/booking/booking_user.dart';
 import 'package:blood_donation/screen/history/history.dart';
 import 'package:blood_donation/screen/mainpage/main_admin.dart';
 import 'package:blood_donation/screen/mainpage/main_guest.dart';
@@ -65,15 +66,15 @@ class _MainPageState extends State<MainPage> {
             iconData: LucideIcons.home,
           ),
           MyBottomNavigationBarItem(
-            page: Booking(),
+            page: BookingAdmin(),
             activeIconData: LucideIcons.calendarDays,
             iconData: LucideIcons.calendarDays,
           ),
-          MyBottomNavigationBarItem(
-            page: History(),
-            activeIconData: LucideIcons.history,
-            iconData: LucideIcons.history,
-          ),
+          // MyBottomNavigationBarItem(
+          //   page: History(),
+          //   activeIconData: LucideIcons.history,
+          //   iconData: LucideIcons.history,
+          // ),
           MyBottomNavigationBarItem(
             page: News(),
             activeIconData: LucideIcons.newspaper,
@@ -94,7 +95,7 @@ class _MainPageState extends State<MainPage> {
             iconData: LucideIcons.home,
           ),
           MyBottomNavigationBarItem(
-            page: Booking(),
+            page: BookingUser(),
             activeIconData: LucideIcons.calendarDays,
             iconData: LucideIcons.calendarDays,
           ),
