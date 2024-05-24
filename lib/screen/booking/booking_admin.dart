@@ -70,10 +70,10 @@ class _BookingState extends State<BookingAdmin> {
               var user = appointment['user'];
               var hospital = appointment['hospital'];
               return MyContainer(
-                onTap: () {
-                  Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-                      builder: (context) => AppointmentDetails(appointment, user, hospital)));
-                },
+                // onTap: () {
+                //   Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+                //       builder: (context) => AppointmentDetails(appointment,hospital,user)));
+                // },
                 margin: MySpacing.bottom(6),
                 paddingAll: 12,
                 borderRadiusAll: 16,
