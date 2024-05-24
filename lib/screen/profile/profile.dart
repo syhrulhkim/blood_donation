@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:blood_donation/api/user_api.dart';
 import 'package:blood_donation/auth/login.dart';
+import 'package:blood_donation/models/user.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_button.dart';
 import 'package:blood_donation/widgets/my_container.dart';
@@ -19,12 +23,53 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   late ThemeData theme;
   late CustomTheme customTheme;
+  late Users userData;
+  bool isLoadingUser = true;
+
 
   @override
   void initState() {
     super.initState();
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
+    _getUser();
+  }
+
+  _getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userDataJson = prefs.getString('userData');
+    if(userDataJson != null) {
+      Map<String, dynamic> decodedData = json.decode(userDataJson);
+      var userId = decodedData['donorID'];
+      var fetchedUserData = await UserAPI().getUserData(userId);
+
+      if(fetchedUserData != null) {
+        setState(() {
+          isLoadingUser = false;
+          userData = Users(
+            donorID: fetchedUserData['donorID'],
+            donorAddress: fetchedUserData['donor_Address'],
+            donorContact: fetchedUserData['donor_Contact'],
+            donorDOB: fetchedUserData['donor_DOB'],
+            donorEligibility: fetchedUserData['donor_Eligibility'],
+            donorAvailability: fetchedUserData['donor_Availability'],
+            donorEmail: fetchedUserData['donor_Email'],
+            donorGender: fetchedUserData['donor_Gender'],
+            donorHealth: fetchedUserData['donor_Health'],
+            donorLatestDonate: fetchedUserData['donor_LatestDonate'],
+            donorName: fetchedUserData['donor_Name'],
+            donorPostcode: fetchedUserData['donor_Postcode'],
+            donorRole: fetchedUserData['donor_Role'],
+            donorType: fetchedUserData['donor_Type'],
+            donorUsername: fetchedUserData['donor_Username'],
+            donorWeight: fetchedUserData['donor_Weight'],
+            donorFcmToken: fetchedUserData['donor_fcmToken'],
+          );
+        });
+      } else {
+        print("User data not found for userId: $userId");
+      }
+    }
   }
 
   Future<void> removeUserData() async {
@@ -70,87 +115,156 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        padding: MySpacing.fromLTRB(24, 52, 24, 24),
-        children: [
-          Center(
-            child: MyContainer(
-              paddingAll: 0,
-              borderRadiusAll: 24,
-              child: ClipRRect(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(24),
-                ),
-                child: Image(
-                  fit: BoxFit.cover,
-                  width: 100,
-                  height: 100,
-                  image: AssetImage('assets/images/profile/avatar_4.jpg'),
+    if (isLoadingUser) {
+      return Scaffold(
+        body: ListView(
+          padding: MySpacing.fromLTRB(24, 52, 24, 24),
+          children: [
+            Center(
+              child: MyContainer(
+                paddingAll: 0,
+                borderRadiusAll: 24,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(24),
+                  ),
+                  child: Image(
+                    fit: BoxFit.cover,
+                    width: 100,
+                    height: 100,
+                    image: AssetImage('assets/images/profile/avatar_4.jpg'),
+                  ),
                 ),
               ),
             ),
-          ),
-          MySpacing.height(24),
-          MyText.titleLarge(
-            'Bessie Cooper',
-            textAlign: TextAlign.center,
-            fontWeight: 600,
-            letterSpacing: 0.8,
-          ),
-          MySpacing.height(4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              MyContainer.rounded(
-                color: customTheme.medicarePrimary,
-                height: 6,
-                width: 6,
-                child: Container(),
+            MySpacing.height(24),
+            MyText.titleLarge(
+              'Loading ..',
+              textAlign: TextAlign.center,
+              fontWeight: 600,
+              letterSpacing: 0.8,
+            ),
+            MySpacing.height(4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                MyContainer.rounded(
+                  color: customTheme.medicarePrimary,
+                  height: 6,
+                  width: 6,
+                  child: Container(),
+                ),
+                MySpacing.width(6),
+                MyText.bodySmall(
+                  'Online',
+                  color: customTheme.medicarePrimary,
+                  muted: true,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+            MySpacing.height(24),
+            MyText.bodySmall(
+              'General',
+              color: theme.colorScheme.onBackground,
+              xMuted: true,
+            ),
+            MySpacing.height(8),
+            _buildSingleRow(title: 'Profile settings', icon: LucideIcons.user),
+            MySpacing.height(8),
+            Divider(),
+            // MySpacing.height(8),
+            // _buildSingleRow(title: 'Password', icon: LucideIcons.lock),
+            // MySpacing.height(8),
+            Divider(),
+            MySpacing.height(8),
+            Container(
+              child: GestureDetector(
+                onTap: () {
+                  _logOut();
+                },
+                child: _buildSingleRow(title: 'Logout', icon: LucideIcons.logOut),
+              )
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Scaffold(
+        body: ListView(
+          padding: MySpacing.fromLTRB(24, 52, 24, 24),
+          children: [
+            Center(
+              child: MyContainer(
+                paddingAll: 0,
+                borderRadiusAll: 24,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(24),
+                  ),
+                  child: Image(
+                    fit: BoxFit.cover,
+                    width: 100,
+                    height: 100,
+                    image: AssetImage('assets/images/profile/avatar_4.jpg'),
+                  ),
+                ),
               ),
-              MySpacing.width(6),
-              MyText.bodySmall(
-                'Online',
-                color: customTheme.medicarePrimary,
-                muted: true,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-          MySpacing.height(24),
-          MyText.bodySmall(
-            'General',
-            color: theme.colorScheme.onBackground,
-            xMuted: true,
-          ),
-          MySpacing.height(24),
-          _buildSingleRow(
-              title: 'Subscription & payment', icon: LucideIcons.creditCard),
-          MySpacing.height(8),
-          Divider(),
-          MySpacing.height(8),
-          _buildSingleRow(title: 'Profile settings', icon: LucideIcons.user),
-          MySpacing.height(8),
-          Divider(),
-          MySpacing.height(8),
-          _buildSingleRow(title: 'Password', icon: LucideIcons.lock),
-          MySpacing.height(8),
-          Divider(),
-          MySpacing.height(8),
-          _buildSingleRow(title: 'Notifications', icon: LucideIcons.bell),
-          MySpacing.height(8),
-          Divider(),
-          MySpacing.height(8),
-          Container(
-            child: GestureDetector(
-              onTap: () {
-                _logOut();
-              },
-              child: _buildSingleRow(title: 'Logout', icon: LucideIcons.logOut),
-            )
-          ),
-        ],
-      ),
-    );
+            ),
+            MySpacing.height(24),
+            MyText.titleLarge(
+              '${userData.donorName}',
+              textAlign: TextAlign.center,
+              fontWeight: 600,
+              letterSpacing: 0.8,
+            ),
+            MySpacing.height(4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                MyContainer.rounded(
+                  color: customTheme.medicarePrimary,
+                  height: 6,
+                  width: 6,
+                  child: Container(),
+                ),
+                MySpacing.width(6),
+                MyText.bodySmall(
+                  'Online',
+                  color: customTheme.medicarePrimary,
+                  muted: true,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+            MySpacing.height(24),
+            MyText.bodySmall(
+              'General',
+              color: theme.colorScheme.onBackground,
+              xMuted: true,
+            ),
+            MySpacing.height(24),
+            // MySpacing.height(8),
+            // _buildSingleRow(title: 'Profile settings', icon: LucideIcons.user),
+            // MySpacing.height(8),
+            // Divider(),
+            // MySpacing.height(8),
+            // _buildSingleRow(title: 'Password', icon: LucideIcons.lock),
+            // MySpacing.height(8),
+            // Divider(),
+            MySpacing.height(8),
+            Container(
+              child: GestureDetector(
+                onTap: () {
+                  _logOut();
+                },
+                child: _buildSingleRow(title: 'Logout', icon: LucideIcons.logOut),
+              )
+            ),
+          ],
+        ),
+      );
+    }
+    
   }
 }

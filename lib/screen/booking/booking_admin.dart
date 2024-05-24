@@ -38,18 +38,16 @@ class _BookingState extends State<BookingAdmin> {
     });
   }
 
-  String timestampToFormattedDate(Timestamp timestamp) {
-    int seconds = timestamp.seconds;
-    int nanoseconds = timestamp.nanoseconds;
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(seconds * 1000 + nanoseconds ~/ 1000000);
-    return DateFormat('d MMM yyyy').format(dateTime);
+  String formatDateString(String dateString) {
+    DateTime dateTime = DateTime.parse(dateString);
+    String formattedDate = DateFormat('d MMM yyyy').format(dateTime);    
+    return formattedDate;
   }
 
-  String timestampToFormattedTime(Timestamp timestamp) {
-    int seconds = timestamp.seconds;
-    int nanoseconds = timestamp.nanoseconds;
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(seconds * 1000 + nanoseconds ~/ 1000000);
-    return DateFormat('h:mma').format(dateTime);
+  String formatTimeString(String dateTimeString) {
+    DateTime dateTime = DateTime.parse(dateTimeString);
+    String formattedTime = DateFormat('h:mm a').format(dateTime);    
+    return formattedTime;
   }
 
   Widget appointmentList() {
@@ -112,13 +110,13 @@ class _BookingState extends State<BookingAdmin> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         MyText.bodySmall(
-                          "${timestampToFormattedDate(appointment["appointment_Date"])}",
+                          "${formatDateString((appointment["appointment_Date"]).toString())}",
                           fontSize: 10,
                           color: Theme.of(context).colorScheme.onBackground,
                           xMuted: true,
                         ),
                         MyText.bodySmall(
-                          "${timestampToFormattedTime(appointment["appointment_Date"])}",
+                          "${formatTimeString((appointment["appointment_Date"]).toString())}",
                           fontSize: 10,
                           color: Theme.of(context).colorScheme.onBackground,
                           xMuted: true,
@@ -148,11 +146,11 @@ class _BookingState extends State<BookingAdmin> {
         backgroundColor: theme.scaffoldBackgroundColor,
         automaticallyImplyLeading: false,
         actions: [
-          Icon(
-            Icons.more_horiz,
-            color: theme.colorScheme.onBackground,
-            size: 24,
-          ),
+          // Icon(
+          //   Icons.more_horiz,
+          //   color: theme.colorScheme.onBackground,
+          //   size: 24,
+          // ),
           MySpacing.width(24)
         ],
       ),
