@@ -1,7 +1,7 @@
 import 'package:blood_donation/auth/nonuser.dart';
 import 'package:blood_donation/models/category.dart';
 import 'package:blood_donation/models/doctor.dart';
-import 'package:blood_donation/screen/mainpage/notification_list.dart';
+import 'package:blood_donation/screen/mainpage/notification/notification_list.dart';
 // import 'package:flutkit/full_apps/other/medicare/single_doctor_screen.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_container.dart';

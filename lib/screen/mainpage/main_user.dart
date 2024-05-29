@@ -5,7 +5,7 @@ import 'package:blood_donation/api/user_api.dart';
 import 'package:blood_donation/models/hospital.dart';
 import 'package:blood_donation/models/user.dart';
 import 'package:blood_donation/screen/mainpage/hospital/hospital_details.dart';
-import 'package:blood_donation/screen/mainpage/notification_list.dart';
+import 'package:blood_donation/screen/mainpage/notification/notification_list.dart';
 import 'package:intl/intl.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_container.dart';

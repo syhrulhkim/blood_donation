@@ -56,8 +56,18 @@ class _BookingState extends State<BookingAdmin> {
       children: [
         MyText.titleMedium(
           'List of appointment',
+          fontSize: 12,
           letterSpacing: 0.5,
           fontWeight: 700,
+        ),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+        MyContainer(
+          padding: EdgeInsets.fromLTRB(5,2,5,2),
+          child: MyText.titleMedium(
+            'Incoming',
+            letterSpacing: 0.5,
+            fontWeight: 700,
+          ),
         ),
         SizedBox(height: 16),
         Expanded(

@@ -144,6 +144,29 @@ class UserNotification {
     required this.status,
   });
 
+  factory UserNotification.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> document) {
+    final data = document.data()!;
+    return UserNotification(
+      campaignId: data["campaignId"],
+      campaignTitle: data["campaignTitle"],
+      campaignDesc: data["campaignDesc"],
+      campaignDate: data["campaignDate"],
+      place: data["place"],
+      status: data["status"],
+    );
+  }
+
+  factory UserNotification.fromMap(Map<String, dynamic> data) {
+    return UserNotification(
+      campaignId: data['campaignId'],
+      campaignTitle: data['campaignTitle'],
+      campaignDesc: data['campaignDesc'],
+      place: data['place'],
+      campaignDate: data['campaignDate'],
+      status: data['status'],
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'campaignId': campaignId,
