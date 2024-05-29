@@ -133,7 +133,6 @@ class _HospitalDetailsState extends State<HospitalDetails> {
   }
 
   Widget criticalBloodLevel() {
-
     String extractBloodType(String fullName) {
       List<String> parts = fullName.split('_');
       String bloodType = parts.last;
