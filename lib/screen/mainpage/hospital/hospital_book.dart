@@ -152,7 +152,6 @@ class _HospitalBookingState extends State<HospitalBooking> {
       onTap: () {
         setState(() {
           selectedDate = index! + 1; // Adjust selectedDate to match the index
-          print("selectedDate : ${selectedDate}");
         });
       },
       child: MyContainer(
@@ -211,7 +210,6 @@ class _HospitalBookingState extends State<HospitalBooking> {
       String userId = widget.user.donorID;
       String hospitalID = widget.hospital.hospitalID;
 
-      print("Appointment DateTime: $appointmentDateTime");
       await BookingAPI().submitAppointment(appointmentDateTime, userId, hospitalID);
       Navigator.pushReplacement(
         context,

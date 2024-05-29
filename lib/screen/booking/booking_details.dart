@@ -33,12 +33,6 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
     hospital = widget.hospital;
     appointment = widget.appointment;
     user = widget.user;
-    print("====================================");
-    print("user : ${user}");
-    print("hospital : ${hospital}");
-    print("appointment : ${appointment}");
-    print("====================================");
-
   }
 
   @override

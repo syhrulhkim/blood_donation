@@ -27,7 +27,6 @@ class _NewDetailsState extends State<NewDetails> {
     campaign = widget.campaign;
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
-    print("campaign: ${campaign.campaignDate}");
   }
   
   String formatDateTime(String dateTimeString) {

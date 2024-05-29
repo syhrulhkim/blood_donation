@@ -41,7 +41,6 @@ class _HospitalDetailsState extends State<HospitalDetails> {
     hospital = widget.hospital;
     bloodLevel = widget.hospital.bloodLevels;
     user = widget.user;
-    print("hospital : ${hospital}");
   }
 
   deleteHospital(hospitalId) async {

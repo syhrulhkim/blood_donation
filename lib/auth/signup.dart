@@ -46,7 +46,6 @@ class _SignUpPageState extends State<SignUpPage> {
   void signUp(String name, String email, String password) async {
     SignUpApi signUpAPI = SignUpApi();
     try {
-      print("signUP");
       await signUpAPI.signUpAPI(name, email, password);
       Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(

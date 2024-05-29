@@ -12,8 +12,6 @@ class FirebaseAPI {
   Future<void> initNotifications(Map<String, dynamic> userData) async {
     await _firebaseMessaging.requestPermission();
     final fcmToken = await _firebaseMessaging.getToken();
-    print("fcmTokenss: ${fcmToken}");
-
     // store fcmToken to user database
     await FirebaseFirestore.instance
         .collection("user")

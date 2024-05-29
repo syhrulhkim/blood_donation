@@ -88,7 +88,6 @@ class _NotificationListState extends State<NotificationList> {
 
     for (var notificationData in getNotification) {
       UserNotification notification = UserNotification.fromMap(notificationData);
-      print("status : ${notification.status == "sent"}");
       if (notification.status == "sent") {
         fetchedUnreadNotifications.add(notification);
       } else {

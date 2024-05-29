@@ -48,15 +48,12 @@ class _MainPageState extends State<MainPage> {
           role = userData!['donor_Role'];
         }
       });
-      print("roleeee : ${role}");
       checkingRole(role);
       isLoading = false;
     }
   }
 
   checkingRole(roles) {
-    print("roles : ${roles.runtimeType}");
-
     switch (roles) {
       case "admin":
         items.addAll([

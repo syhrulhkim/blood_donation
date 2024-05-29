@@ -100,14 +100,11 @@ class _NewsAddState extends State<NewsAdd> {
   }
 
   getSelectedUsers(availability) {
-    print("availability: ${availability == "All"}");
     switch (availability) {
       case "All":
         var getUserList = userList;
-        print("getUserList: ${getUserList}");
         List<CampaignSendTo> newUserList = [];
         var userTokenList = [];
-
         for (var i = 0; i < userList.length; i++) {
           var eachUser = userList[i];
           CampaignSendTo listUser = CampaignSendTo(
@@ -145,8 +142,6 @@ class _NewsAddState extends State<NewsAdd> {
     try {
       Hospital selectedHosp = getSelectedHospital(hospital);
       List<CampaignSendTo> selectedUsers = getSelectedUsers(availability);
-      print("selectedUsers : ${selectedUsers}");
-
       DateTime now = DateTime.now();
       String isoDate = now.toIso8601String();
 
@@ -172,7 +167,6 @@ class _NewsAddState extends State<NewsAdd> {
             builder: (context) => News()),
       );
     } catch (e) {
-      print('Submit failed: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Submit Failed. Please try again'),
@@ -206,8 +200,6 @@ class _NewsAddState extends State<NewsAdd> {
 
   // send to certain devices
   Future<bool> pushNotificationsGroupDevice(userTokenList) async {
-    print("userTokenList: ${userTokenList}");
-
     String dataNotifications = '{'
         '"operation": "create",'
         '"notification_key_name": "appUser-testUser",'
@@ -233,8 +225,6 @@ class _NewsAddState extends State<NewsAdd> {
   }
 
   Widget newsForm() {
-    print("hospitalList: ${hospitalList}");
-    print("userList: ${userList}");
     List<String> selectedHospitalOptions = [];
     List<String> options = ['All', 'Not Donate', 'Donated', 'Critical Blood'];
 

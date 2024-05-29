@@ -60,7 +60,6 @@ class BookingAPI {
   Future<List<Map<String, dynamic>>> appointmentListUser(String userId) async {
     final _db = FirebaseFirestore.instance;
     final snapshot = await _db.collection("appointment").where("donorID", isEqualTo: userId).get();
-    print("snapshot: ${snapshot}");
 
     List<Map<String, dynamic>> appointments = await Future.wait(snapshot.docs.map((doc) async {
       Map<String, dynamic> appointmentData = doc.data();
@@ -115,13 +114,10 @@ class BookingAPI {
     final snapshot = await _db.collection("appointment").get();
 
     DateTime today = DateTime.now();
-    print('Today\'s date: $today'); // Debug print
 
     List<Map<String, dynamic>> appointments = await Future.wait(snapshot.docs.map((doc) async {
       Map<String, dynamic> appointmentData = doc.data();
       appointmentData['id'] = doc.id;
-
-      // Fetching donor data and embedding address directly
       if (appointmentData['donorID'] != null && appointmentData['donorID'].isNotEmpty) {
         DocumentSnapshot donorSnapshot = await _db.collection("user").doc(appointmentData['donorID']).get();
         if (donorSnapshot.exists) {

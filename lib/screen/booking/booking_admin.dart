@@ -33,7 +33,6 @@ class _BookingState extends State<BookingAdmin> {
     var bookingData = await bookingAPI.appointmentList();
 
     setState(() {
-      print("bookingData: ${bookingData}");
       bookingList = bookingData;
     });
   }
@@ -61,15 +60,6 @@ class _BookingState extends State<BookingAdmin> {
           fontWeight: 700,
         ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-        MyContainer(
-          padding: EdgeInsets.fromLTRB(5,2,5,2),
-          child: MyText.titleMedium(
-            'Incoming',
-            letterSpacing: 0.5,
-            fontWeight: 700,
-          ),
-        ),
-        SizedBox(height: 16),
         Expanded(
           child: ListView.builder(
             itemCount: bookingList.length,

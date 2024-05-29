@@ -287,8 +287,6 @@ class _MainUserState extends State<MainUser> {
   Widget _donationDate(lastDonate){
     DateTime dateTime = DateTime.parse(lastDonate.donorLatestDonate.toString());
     String formattedDate = DateFormat('E, MMM dd, hh:mma').format(dateTime);
-
-    print("lastDonate : ${lastDonate.donorLatestDonate.toString()}");
     if (lastDonate == '') {
       return Row(
         children: [
