@@ -58,7 +58,6 @@ class _MainUserState extends State<MainUser> {
 
       if(fetchedUserData != null) {
         setState(() {
-          isLoadingUser = false;
           userData = Users(
             donorID: fetchedUserData['donorID'],
             donorAddress: fetchedUserData['donor_Address'],
@@ -79,6 +78,7 @@ class _MainUserState extends State<MainUser> {
             donorFcmToken: fetchedUserData['donor_fcmToken'],
           );
         });
+        isLoadingUser = false;
       } else {
         print("User data not found for userId: $userId");
       }
@@ -285,9 +285,7 @@ class _MainUserState extends State<MainUser> {
   }
 
   Widget _donationDate(lastDonate){
-    DateTime dateTime = DateTime.parse(lastDonate.donorLatestDonate.toString());
-    String formattedDate = DateFormat('E, MMM dd, hh:mma').format(dateTime);
-    if (lastDonate == '') {
+    if (lastDonate.donorLatestDonate == '') {
       return Row(
         children: [
           Icon(
@@ -308,6 +306,9 @@ class _MainUserState extends State<MainUser> {
         ],
       );
     } else {
+      DateTime dateTime = DateTime.parse(lastDonate.donorLatestDonate.toString());
+      String formattedDate = DateFormat('E, MMM dd, hh:mma').format(dateTime);
+
       return Row(
         children: [
           Icon(

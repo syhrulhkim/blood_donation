@@ -99,7 +99,9 @@ class _NewsAddState extends State<NewsAdd> {
     }
   }
 
-  getSelectedUsers(availability) {
+  getSelectedUsers(availability, hospital) {
+    print("availibility : ${availability}");
+
     switch (availability) {
       case "All":
         var getUserList = userList;
@@ -119,15 +121,78 @@ class _NewsAddState extends State<NewsAdd> {
         // send notification to the selected user 
         pushNotificationsGroupDevice(userTokenList);
         return newUserList;
+
       case "Not Donate":
-        
-        break;
+        var getUserList = userList;
+        List<CampaignSendTo> newUserList = [];
+        var userTokenList = [];
+        for (var i = 0; i < userList.length; i++) {
+          var eachUser = userList[i];
+          print("Not Donated : ${eachUser.donorAvailability}");
+          if(eachUser.donorAvailability != "donated"){
+            CampaignSendTo listUser = CampaignSendTo(
+              donorID: eachUser.donorID,
+              donorName: eachUser.donorName,
+              campaignStatus: "send",
+              readTime: "",
+            );
+            newUserList.add(listUser);
+          }
+          userTokenList.add("\"${eachUser.donorFcmToken}\"");
+        }
+        // send notification to the selected user 
+        pushNotificationsGroupDevice(userTokenList);
+        return newUserList;
+
       case "Donate":
-        
-        break;
+
+        var getUserList = userList;
+        List<CampaignSendTo> newUserList = [];
+        var userTokenList = [];
+        for (var i = 0; i < userList.length; i++) {
+          var eachUser = userList[i];
+          print("Not Donated : ${eachUser.donorAvailability}");
+          if(eachUser.donorAvailability == "donated"){
+            CampaignSendTo listUser = CampaignSendTo(
+              donorID: eachUser.donorID,
+              donorName: eachUser.donorName,
+              campaignStatus: "send",
+              readTime: "",
+            );
+            newUserList.add(listUser);
+          }
+          userTokenList.add("\"${eachUser.donorFcmToken}\"");
+        }
+        // send notification to the selected user 
+        pushNotificationsGroupDevice(userTokenList);
+        return newUserList;
+
       case "Critical Blood":
+
+        var getUserList = userList;
+        List<CampaignSendTo> newUserList = [];
+        var userTokenList = [];
+
         
-        break;
+        
+        for (var i = 0; i < userList.length; i++) {
+          var eachUser = userList[i];
+
+          if(eachUser.donorAvailability == "donated"){
+            CampaignSendTo listUser = CampaignSendTo(
+              donorID: eachUser.donorID,
+              donorName: eachUser.donorName,
+              campaignStatus: "send",
+              readTime: "",
+            );
+            newUserList.add(listUser);
+          }
+          userTokenList.add("\"${eachUser.donorFcmToken}\"");
+        }
+        // send notification to the selected user 
+        pushNotificationsGroupDevice(userTokenList);
+        return newUserList;
+
     }
 
   }
@@ -136,12 +201,11 @@ class _NewsAddState extends State<NewsAdd> {
     String title = _titleController.text;
     String description = _descController.text;
     String hospital = selectedHospital;
-    String availability = "All";
-    // String availability = selectedAvailability;
+    String availability = selectedAvailability;
 
     try {
       Hospital selectedHosp = getSelectedHospital(hospital);
-      List<CampaignSendTo> selectedUsers = getSelectedUsers(availability);
+      List<CampaignSendTo> selectedUsers = getSelectedUsers(availability, hospital);
       DateTime now = DateTime.now();
       String isoDate = now.toIso8601String();
 
@@ -367,7 +431,6 @@ class _NewsAddState extends State<NewsAdd> {
                   backgroundColor: AppTheme.customTheme.medicarePrimary,
                   onPressed: () {
                     buttonCreateAnnouncement();
-                    // pushNotificationsGroupDevice();
                   },
                   child: MyText.bodyLarge(
                     'Submit',

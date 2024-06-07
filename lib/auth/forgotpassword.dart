@@ -86,22 +86,22 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               autofocus: true,
             ),
             MySpacing.height(32),
-            MyButton.block(
-                elevation: 0,
-                borderRadiusAll: 8,
-                padding: MySpacing.y(20),
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).push(
-                    MaterialPageRoute(builder: (context) => Home()),
-                  );
-                },
-                backgroundColor: customTheme.medicarePrimary,
-                child: MyText.bodyLarge(
-                  "Forgot Password",
-                  color: customTheme.medicareOnPrimary,
-                  fontWeight: 600,
-                  letterSpacing: 0.3,
-                )),
+            // MyButton.block(
+            //     elevation: 0,
+            //     borderRadiusAll: 8,
+            //     padding: MySpacing.y(20),
+            //     onPressed: () {
+            //       Navigator.of(context, rootNavigator: true).push(
+            //         MaterialPageRoute(builder: (context) => Home()),
+            //       );
+            //     },
+            //     backgroundColor: customTheme.medicarePrimary,
+            //     child: MyText.bodyLarge(
+            //       "Forgot Password",
+            //       color: customTheme.medicareOnPrimary,
+            //       fontWeight: 600,
+            //       letterSpacing: 0.3,
+            //     )),
             MySpacing.height(16),
             MyButton.text(
                 elevation: 0,

@@ -50,6 +50,7 @@ class SignUpApi {
         'donor_Contact': "",
         'donor_DOB': "",
         'donor_Eligibility': "",
+        'donor_Availability': "available",
         'donor_Email': email,
         'donor_Gender': "",
         'donor_Health': "",
