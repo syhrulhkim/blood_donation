@@ -16,6 +16,7 @@ class Users {
   final String donorRole;
   final String donorType;
   final String donorUsername;
+  final String donorHeight;
   final String donorWeight;
   final String donorFcmToken;
 
@@ -35,6 +36,7 @@ class Users {
     required this.donorRole,
     required this.donorType,
     required this.donorUsername,
+    required this.donorHeight,
     required this.donorWeight,
     required this.donorFcmToken,
   });
@@ -56,6 +58,7 @@ class Users {
         donorType.isEmpty &&
         donorUsername.isEmpty &&
         donorWeight.isEmpty &&
+        donorHeight.isEmpty &&
         donorFcmToken.isEmpty;
   }
 
@@ -77,6 +80,7 @@ class Users {
       donorType: json['donor_Type'] ?? '',
       donorUsername: json['donor_Username'] ?? '',
       donorWeight: json['donor_Weight'] ?? '',
+      donorHeight: json['donor_Height'] ?? '',
       donorFcmToken: json['donor_fcmToken'] ?? '',
     );
   }
@@ -99,6 +103,7 @@ class Users {
       "donor_Type": donorType,
       "donor_Username": donorUsername,
       "donor_Weight": donorWeight,
+      "donor_Height": donorHeight,
       "donor_fcmToken": donorFcmToken,
     };
   }
@@ -122,6 +127,7 @@ class Users {
       donorType: data["donor_Type"],
       donorUsername: data["donor_Username"],
       donorWeight: data["donor_Weight"],
+      donorHeight: data["donor_Height"],
       donorFcmToken: data["donor_fcmToken"],
     );
   }

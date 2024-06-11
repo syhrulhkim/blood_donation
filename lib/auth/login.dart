@@ -110,6 +110,12 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Image(
+                image: AssetImage(
+                    'icon/appicon.png'),
+                width: 220,
+              ),
+              MySpacing.height(24),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(

@@ -111,15 +111,17 @@ class BookingAPI {
 
   Future<List<Map<String, dynamic>>> appointmentListFuture(String userId) async {
     final _db = FirebaseFirestore.instance;
-    final snapshot = await _db.collection("appointment").get();
+    final snapshot = await _db.collection("appointment").where('donorID', isEqualTo: userId).get();
 
     DateTime today = DateTime.now();
 
     List<Map<String, dynamic>> appointments = await Future.wait(snapshot.docs.map((doc) async {
       Map<String, dynamic> appointmentData = doc.data();
       appointmentData['id'] = doc.id;
-      if (appointmentData['donorID'] != null && appointmentData['donorID'].isNotEmpty) {
-        DocumentSnapshot donorSnapshot = await _db.collection("user").doc(appointmentData['donorID']).get();
+
+      // Fetching user data (only if donorID matches)
+      if (appointmentData['donorID'] != null && appointmentData['donorID'] == userId) {
+        DocumentSnapshot donorSnapshot = await _db.collection("user").doc(userId).get();
         if (donorSnapshot.exists) {
           Map<String, dynamic> donorData = donorSnapshot.data() as Map<String, dynamic>;
           appointmentData['user'] = donorData['address'] ?? {};
@@ -142,10 +144,9 @@ class BookingAPI {
       if (appointmentData['appointment_Date'] != null && appointmentData['appointment_Date'] is Timestamp) {
         Timestamp appointmentTimestamp = appointmentData['appointment_Date'];
         DateTime appointmentDateTime = appointmentTimestamp.toDate();
-        print('Appointment Date (DateTime): $appointmentDateTime'); // Debug print
         appointmentData['appointment_Date'] = appointmentDateTime;
       } else {
-        print('Invalid or missing appointment date for document ID: ${doc.id}'); // Debug print
+        print('Invalid or missing appointment date for document ID: ${doc.id}');
       }
 
       return appointmentData;
@@ -154,12 +155,12 @@ class BookingAPI {
     // Filter and sort appointments by "appointment_Date"
     appointments = appointments.where((appointment) {
       if (appointment['appointment_Date'] == null) {
-        print('Filtering out document ID: ${appointment['id']} due to missing appointment date'); // Debug print
+        print('Filtering out document ID: ${appointment['id']} due to missing appointment date');
         return false;
       }
       DateTime appointmentDate = appointment['appointment_Date'];
       bool isOnward = appointmentDate.isAfter(today) || appointmentDate.isAtSameMomentAs(today);
-      print('Appointment ID: ${appointment['id']}, Date: $appointmentDate, Is Onward: $isOnward'); // Debug print
+      print('Appointment ID: ${appointment['id']}, Date: $appointmentDate, Is Onward: $isOnward');
       return isOnward;
     }).toList();
 
@@ -170,7 +171,7 @@ class BookingAPI {
       return dateA.compareTo(dateB);
     });
 
-    print('Filtered and sorted appointments: $appointments'); // Debug print
+    print('Filtered and sorted appointments: $appointments');
 
     return appointments;
   }

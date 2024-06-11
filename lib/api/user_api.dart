@@ -13,6 +13,18 @@ class UserAPI {
     return data;
   }
 
+  Future<void> updateUser(Users user) async {
+    try {
+      Map<String, dynamic> userData = user.toJson();
+      await _db.collection("user").doc(user.donorID).update(userData);
+    
+      print("User data updated successfully");
+    } catch (error) {
+      print("Error updating user data: $error");
+      throw Exception("Failed to update user data");
+    }
+  }
+
   Future<Map<String, dynamic>?> getUserData(userId) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> snapshot =

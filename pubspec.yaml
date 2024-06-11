@@ -36,6 +36,7 @@ flutter_icons:
 flutter:
   uses-material-design: true
   assets:
+    - icon/
     - assets/
     - .env
     # Map Styles

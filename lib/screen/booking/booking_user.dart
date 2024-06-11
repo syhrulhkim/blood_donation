@@ -63,6 +63,7 @@ class _BookingState extends State<BookingUser> {
             donorType: fetchedUserData['donor_Type'],
             donorUsername: fetchedUserData['donor_Username'],
             donorWeight: fetchedUserData['donor_Weight'],
+            donorHeight: fetchedUserData['donor_Height'],
             donorFcmToken: fetchedUserData['donor_fcmToken'],
           );
         });

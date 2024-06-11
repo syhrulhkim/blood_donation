@@ -72,6 +72,7 @@ class _NotificationDetailsState extends State<NotificationDetails> {
             donorType: fetchedUserData['donor_Type'],
             donorUsername: fetchedUserData['donor_Username'],
             donorWeight: fetchedUserData['donor_Weight'],
+            donorHeight: fetchedUserData['donor_Height'],
             donorFcmToken: fetchedUserData['donor_fcmToken'],
           );
         });

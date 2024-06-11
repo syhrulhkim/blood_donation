@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:blood_donation/api/user_api.dart';
 import 'package:blood_donation/auth/login.dart';
 import 'package:blood_donation/models/user.dart';
+import 'package:blood_donation/screen/profile/profile_edit.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_button.dart';
 import 'package:blood_donation/widgets/my_container.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
 import 'package:blood_donation/widgets/my_text.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -25,7 +27,6 @@ class _ProfileState extends State<Profile> {
   late CustomTheme customTheme;
   late Users userData;
   bool isLoadingUser = true;
-
 
   @override
   void initState() {
@@ -63,6 +64,7 @@ class _ProfileState extends State<Profile> {
             donorType: fetchedUserData['donor_Type'],
             donorUsername: fetchedUserData['donor_Username'],
             donorWeight: fetchedUserData['donor_Weight'],
+            donorHeight: fetchedUserData['donor_Height'],
             donorFcmToken: fetchedUserData['donor_fcmToken'],
           );
         });
@@ -206,7 +208,7 @@ class _ProfileState extends State<Profile> {
                     fit: BoxFit.cover,
                     width: 100,
                     height: 100,
-                    image: AssetImage('assets/images/profile/avatar_4.jpg'),
+                    image: AssetImage('assets/images/profile/avatar_3.jpg'),
                   ),
                 ),
               ),
@@ -244,9 +246,19 @@ class _ProfileState extends State<Profile> {
               xMuted: true,
             ),
             MySpacing.height(24),
-            // MySpacing.height(8),
-            // _buildSingleRow(title: 'Profile settings', icon: LucideIcons.user),
-            // MySpacing.height(8),
+            MySpacing.height(8),
+            Container(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(
+                        builder: (context) => ProfileEdit(userData)),
+                  );
+                },
+                child: _buildSingleRow(title: 'Profile settings', icon: LucideIcons.user),
+              )
+            ),
+            MySpacing.height(8),
             // Divider(),
             // MySpacing.height(8),
             // _buildSingleRow(title: 'Password', icon: LucideIcons.lock),

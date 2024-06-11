@@ -75,6 +75,7 @@ class _MainAdminState extends State<MainAdmin> {
             donorType: fetchedUserData['donor_Type'],
             donorUsername: fetchedUserData['donor_Username'],
             donorWeight: fetchedUserData['donor_Weight'],
+            donorHeight: fetchedUserData['donor_Height'],
             donorFcmToken: fetchedUserData['donor_fcmToken'],
           );
         });
@@ -342,57 +343,57 @@ class _MainAdminState extends State<MainAdmin> {
             ),
           ),
           MySpacing.height(24),
-          Padding(
-            padding: MySpacing.horizontal(24),
-            child: TextFormField(
-              decoration: InputDecoration(
-                filled: true,
-                labelText: "Search a hospital",
-                hintText: "Search a hospital",
-                labelStyle: MyTextStyle.getStyle(
-                    color: customTheme.medicarePrimary,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    muted: true),
-                hintStyle: MyTextStyle.getStyle(
-                    color: customTheme.medicarePrimary,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    muted: true),
-                fillColor: customTheme.card,
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                contentPadding: MySpacing.all(16),
-                prefixIcon: Icon(
-                  LucideIcons.search,
-                  size: 20,
-                ),
-                prefixIconColor: customTheme.medicarePrimary,
-                focusColor: customTheme.medicarePrimary,
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-              ),
-              cursorColor: customTheme.medicarePrimary,
-              autofocus: false,
-            ),
-          ),
+          // Padding(
+          //   padding: MySpacing.horizontal(24),
+          //   child: TextFormField(
+          //     decoration: InputDecoration(
+          //       filled: true,
+          //       labelText: "Search a hospital",
+          //       hintText: "Search a hospital",
+          //       labelStyle: MyTextStyle.getStyle(
+          //           color: customTheme.medicarePrimary,
+          //           fontSize: 12,
+          //           fontWeight: 600,
+          //           muted: true),
+          //       hintStyle: MyTextStyle.getStyle(
+          //           color: customTheme.medicarePrimary,
+          //           fontSize: 12,
+          //           fontWeight: 600,
+          //           muted: true),
+          //       fillColor: customTheme.card,
+          //       enabledBorder: OutlineInputBorder(
+          //           borderRadius: BorderRadius.all(
+          //             Radius.circular(8),
+          //           ),
+          //           borderSide: BorderSide.none),
+          //       border: OutlineInputBorder(
+          //           borderRadius: BorderRadius.all(
+          //             Radius.circular(8),
+          //           ),
+          //           borderSide: BorderSide.none),
+          //       disabledBorder: OutlineInputBorder(
+          //           borderRadius: BorderRadius.all(
+          //             Radius.circular(8),
+          //           ),
+          //           borderSide: BorderSide.none),
+          //       errorBorder: OutlineInputBorder(
+          //           borderRadius: BorderRadius.all(
+          //             Radius.circular(8),
+          //           ),
+          //           borderSide: BorderSide.none),
+          //       contentPadding: MySpacing.all(16),
+          //       prefixIcon: Icon(
+          //         LucideIcons.search,
+          //         size: 20,
+          //       ),
+          //       prefixIconColor: customTheme.medicarePrimary,
+          //       focusColor: customTheme.medicarePrimary,
+          //       floatingLabelBehavior: FloatingLabelBehavior.never,
+          //     ),
+          //     cursorColor: customTheme.medicarePrimary,
+          //     autofocus: false,
+          //   ),
+          // ),
           MySpacing.height(24),
           Padding(
             padding: MySpacing.horizontal(24),
@@ -403,11 +404,11 @@ class _MainAdminState extends State<MainAdmin> {
                   'Admin Dashboard',
                   fontWeight: 700,
                 ),
-                MyText.bodySmall(
-                  'See more',
-                  color: customTheme.medicarePrimary,
-                  fontSize: 10,
-                ),
+                // MyText.bodySmall(
+                //   'See more',
+                //   color: customTheme.medicarePrimary,
+                //   fontSize: 10,
+                // ),
               ],
             ),
           ),

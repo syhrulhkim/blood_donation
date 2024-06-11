@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:blood_donation/api/main_api.dart';
+import 'package:blood_donation/api/notification_api.dart';
 import 'package:blood_donation/api/user_api.dart';
 import 'package:blood_donation/models/hospital.dart';
 import 'package:blood_donation/models/user.dart';
@@ -30,6 +31,8 @@ class _MainUserState extends State<MainUser> {
   List<Hospital> hospitalList = [];
   late Users? userData;
   bool isLoadingUser = true;
+  List<UserNotification> readNotifications = [];
+  List<UserNotification> unreadNotifications = [];
 
   @override
   void initState() {
@@ -75,14 +78,40 @@ class _MainUserState extends State<MainUser> {
             donorType: fetchedUserData['donor_Type'],
             donorUsername: fetchedUserData['donor_Username'],
             donorWeight: fetchedUserData['donor_Weight'],
+            donorHeight: fetchedUserData['donor_Height'],
             donorFcmToken: fetchedUserData['donor_fcmToken'],
           );
         });
         isLoadingUser = false;
+        _getNotificationUser(userId);
       } else {
         print("User data not found for userId: $userId");
       }
     }
+  }
+
+  _getNotificationUser(String userId) async{
+    NotificationAPI notificationAPI = NotificationAPI();
+    var getNotification = await notificationAPI.getUserNotifications(userId);    
+    List<UserNotification> fetchedReadNotifications = [];
+    List<UserNotification> fetchedUnreadNotifications = [];
+
+    for (var notificationData in getNotification) {
+      UserNotification notification = UserNotification.fromMap(notificationData);
+      if (notification.status == "sent") {
+        fetchedUnreadNotifications.add(notification);
+      } else {
+        fetchedReadNotifications.add(notification);
+      }
+    }
+    // Sort notifications by campaignId in descending order
+    fetchedReadNotifications.sort((a, b) => b.campaignId.compareTo(a.campaignId));
+    fetchedUnreadNotifications.sort((a, b) => b.campaignId.compareTo(a.campaignId));
+
+    setState(() {
+      readNotifications = fetchedReadNotifications;
+      unreadNotifications = fetchedUnreadNotifications;
+    });
   }
 
   Widget _buildAllHospital() {
@@ -385,6 +414,7 @@ class _MainUserState extends State<MainUser> {
                         size: 20,
                         color: theme.colorScheme.onBackground.withAlpha(200),
                       ),
+                      if(unreadNotifications.length > 0)
                       Positioned(
                         right: 2,
                         top: 2,
@@ -393,7 +423,7 @@ class _MainUserState extends State<MainUser> {
                           color: customTheme.medicarePrimary,
                           child: Container(),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -401,57 +431,57 @@ class _MainUserState extends State<MainUser> {
             ),
           ),
           MySpacing.height(24),
-          Padding(
-            padding: MySpacing.horizontal(24),
-            child: TextFormField(
-              decoration: InputDecoration(
-                filled: true,
-                labelText: "Search a hospital",
-                hintText: "Search a hospital",
-                labelStyle: MyTextStyle.getStyle(
-                    color: customTheme.medicarePrimary,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    muted: true),
-                hintStyle: MyTextStyle.getStyle(
-                    color: customTheme.medicarePrimary,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    muted: true),
-                fillColor: customTheme.card,
-                enabledBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                disabledBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                errorBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                contentPadding: MySpacing.all(16),
-                prefixIcon: const Icon(
-                  LucideIcons.search,
-                  size: 20,
-                ),
-                prefixIconColor: customTheme.medicarePrimary,
-                focusColor: customTheme.medicarePrimary,
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-              ),
-              cursorColor: customTheme.medicarePrimary,
-              autofocus: false,
-            ),
-          ),
+          // Padding(
+          //   padding: MySpacing.horizontal(24),
+          //   child: TextFormField(
+          //     decoration: InputDecoration(
+          //       filled: true,
+          //       labelText: "Search a hospital",
+          //       hintText: "Search a hospital",
+          //       labelStyle: MyTextStyle.getStyle(
+          //           color: customTheme.medicarePrimary,
+          //           fontSize: 12,
+          //           fontWeight: 600,
+          //           muted: true),
+          //       hintStyle: MyTextStyle.getStyle(
+          //           color: customTheme.medicarePrimary,
+          //           fontSize: 12,
+          //           fontWeight: 600,
+          //           muted: true),
+          //       fillColor: customTheme.card,
+          //       enabledBorder: const OutlineInputBorder(
+          //           borderRadius: BorderRadius.all(
+          //             Radius.circular(8),
+          //           ),
+          //           borderSide: BorderSide.none),
+          //       border: const OutlineInputBorder(
+          //           borderRadius: BorderRadius.all(
+          //             Radius.circular(8),
+          //           ),
+          //           borderSide: BorderSide.none),
+          //       disabledBorder: const OutlineInputBorder(
+          //           borderRadius: BorderRadius.all(
+          //             Radius.circular(8),
+          //           ),
+          //           borderSide: BorderSide.none),
+          //       errorBorder: const OutlineInputBorder(
+          //           borderRadius: BorderRadius.all(
+          //             Radius.circular(8),
+          //           ),
+          //           borderSide: BorderSide.none),
+          //       contentPadding: MySpacing.all(16),
+          //       prefixIcon: const Icon(
+          //         LucideIcons.search,
+          //         size: 20,
+          //       ),
+          //       prefixIconColor: customTheme.medicarePrimary,
+          //       focusColor: customTheme.medicarePrimary,
+          //       floatingLabelBehavior: FloatingLabelBehavior.never,
+          //     ),
+          //     cursorColor: customTheme.medicarePrimary,
+          //     autofocus: false,
+          //   ),
+          // ),
           MySpacing.height(24),
           Padding(
             padding: MySpacing.horizontal(24),
@@ -461,11 +491,6 @@ class _MainUserState extends State<MainUser> {
                 MyText.bodyMedium(
                   'Dashboard',
                   fontWeight: 700,
-                ),
-                MyText.bodySmall(
-                  'See more',
-                  color: customTheme.medicarePrimary,
-                  fontSize: 10,
                 ),
               ],
             ),
