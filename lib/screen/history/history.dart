@@ -101,7 +101,7 @@ class _History extends State<History> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         MyText.titleMedium(
-          'List of appointment',
+          'List of history appointment',
           letterSpacing: 0.5,
           fontWeight: 700,
         ),
@@ -185,19 +185,19 @@ class _History extends State<History> {
       appBar: AppBar(
         centerTitle: true,
         title: MyText.bodyLarge(
-          'Appointment',
+          'History Appointment',
           fontWeight: 700,
         ),
         elevation: 0,
         backgroundColor: theme.scaffoldBackgroundColor,
         automaticallyImplyLeading: false,
         actions: [
-          Icon(
-            Icons.more_horiz,
-            color: theme.colorScheme.onBackground,
-            size: 24,
-          ),
-          MySpacing.width(24)
+          // Icon(
+          //   Icons.more_horiz,
+          //   color: theme.colorScheme.onBackground,
+          //   size: 24,
+          // ),
+          // MySpacing.width(24)
         ],
       ),
       body: Padding(

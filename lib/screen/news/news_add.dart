@@ -2,6 +2,7 @@ import 'package:blood_donation/api/campaign_api.dart';
 import 'package:blood_donation/api/main_api.dart';
 import 'package:blood_donation/api/user_api.dart';
 import 'package:blood_donation/constant.dart';
+import 'package:blood_donation/extensions/string.dart';
 import 'package:blood_donation/main.dart';
 import 'package:blood_donation/models/campaign.dart';
 import 'package:blood_donation/models/hospital.dart';
@@ -99,7 +100,13 @@ class _NewsAddState extends State<NewsAdd> {
     }
   }
 
-  getSelectedUsers(availability, hospital) {
+  String transformString(String input) {
+    String withoutPrefix = input.replaceFirst("blood_", "");
+    String capitalized = withoutPrefix.toUpperCase();
+    return capitalized;
+  }
+
+  getSelectedUsers(availability,Hospital hospital) {
     print("availibility : ${availability}");
 
     switch (availability) {
@@ -169,32 +176,44 @@ class _NewsAddState extends State<NewsAdd> {
 
       case "Critical Blood":
 
+        print(hospital.bloodLevels);
         var getUserList = userList;
         List<CampaignSendTo> newUserList = [];
         var userTokenList = [];
 
-        
-        
-        for (var i = 0; i < userList.length; i++) {
-          var eachUser = userList[i];
+        for (var i = 0; i < hospital.bloodLevels.length; i++) {
+            var blood = hospital.bloodLevels[i];
+            var bloodPercent = blood.percent.toInt();
+            var convertBloodType = transformString(blood.bloodType);
 
-          if(eachUser.donorAvailability == "donated"){
-            CampaignSendTo listUser = CampaignSendTo(
-              donorID: eachUser.donorID,
-              donorName: eachUser.donorName,
-              campaignStatus: "send",
-              readTime: "",
-            );
-            newUserList.add(listUser);
-          }
-          userTokenList.add("\"${eachUser.donorFcmToken}\"");
+            if (bloodPercent <= 30) {
+                userTokenList.clear();
+
+                for (var j = 0; j < userList.length; j++) {
+                    var eachUser = userList[j];
+                    print(eachUser.donorName);
+
+                    if(eachUser.donorType == convertBloodType){
+                        CampaignSendTo listUser = CampaignSendTo(
+                            donorID: eachUser.donorID,
+                            donorName: eachUser.donorName,
+                            campaignStatus: "send",
+                            readTime: "",
+                        );
+                        newUserList.add(listUser);
+                        userTokenList.add("\"${eachUser.donorFcmToken}\""); // Only add matching users
+                    }
+                }
+
+                // Send notification to the selected users for this blood type
+                if (userTokenList.isNotEmpty) {
+                    print("userTokenList : ${userTokenList}");
+                    pushNotificationsGroupDevice(userTokenList);
+                }
+            }
         }
-        // send notification to the selected user 
-        pushNotificationsGroupDevice(userTokenList);
         return newUserList;
-
     }
-
   }
 
   buttonCreateAnnouncement() async{
@@ -205,7 +224,7 @@ class _NewsAddState extends State<NewsAdd> {
 
     try {
       Hospital selectedHosp = getSelectedHospital(hospital);
-      List<CampaignSendTo> selectedUsers = getSelectedUsers(availability, hospital);
+      List<CampaignSendTo> selectedUsers = getSelectedUsers(availability, selectedHosp);
       DateTime now = DateTime.now();
       String isoDate = now.toIso8601String();
 
@@ -226,10 +245,10 @@ class _NewsAddState extends State<NewsAdd> {
       CampaignAPI().addCampaignWithUsers(newCampaign,selectedUsers);
 
       // navigate to add page if succeed
-      Navigator.of(context, rootNavigator: true).push(
-        MaterialPageRoute(
-            builder: (context) => News()),
-      );
+      // Navigator.of(context, rootNavigator: true).push(
+      //   MaterialPageRoute(
+      //       builder: (context) => News()),
+      // );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

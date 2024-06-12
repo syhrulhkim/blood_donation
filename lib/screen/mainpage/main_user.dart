@@ -390,7 +390,7 @@ class _MainUserState extends State<MainUser> {
                         ),
                         MySpacing.width(4),
                         MyText.bodySmall(
-                          'Terengganu, Malaysia',
+                          'Malaysia',
                           color: theme.colorScheme.onBackground,
                           fontWeight: 600,
                         ),
@@ -482,7 +482,7 @@ class _MainUserState extends State<MainUser> {
           //     autofocus: false,
           //   ),
           // ),
-          MySpacing.height(24),
+          // MySpacing.height(24),
           Padding(
             padding: MySpacing.horizontal(24),
             child: Row(
@@ -495,7 +495,7 @@ class _MainUserState extends State<MainUser> {
               ],
             ),
           ),
-          MySpacing.height(24),
+          MySpacing.height(16),
           donateAvailability(),
           MySpacing.height(24),
           Padding(
