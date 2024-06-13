@@ -73,7 +73,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-
   Future<void> _storeUserData(Map<String, dynamic> userData) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -100,22 +99,20 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Padding(
-          padding: MySpacing.horizontal(16),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image(
-                image: AssetImage(
-                    'icon/appicon.png'),
+                image: AssetImage('icon/appicon.png'),
                 width: 220,
               ),
-              MySpacing.height(24),
+              SizedBox(height: 24),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -165,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                 cursorColor: customTheme.medicarePrimary,
                 autofocus: true,
               ),
-              MySpacing.height(24),
+              SizedBox(height: 24),
               TextFormField(
                 controller: _passwordController,
                 obscureText: !_passwordVisible,
@@ -227,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                 cursorColor: customTheme.medicarePrimary,
                 autofocus: true,
               ),
-              MySpacing.height(16),
+              SizedBox(height: 16),
               Align(
                 alignment: Alignment.centerRight,
                 child: MyButton.text(
@@ -242,7 +239,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: MyText.bodySmall("Forgot Password?",
                         color: customTheme.medicarePrimary)),
               ),
-              MySpacing.height(16),
+              SizedBox(height: 16),
               MyButton.block(
                 borderRadiusAll: 8,
                 elevation: 0,
@@ -258,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                   letterSpacing: 0.4,
                 ),
               ),
-              MySpacing.height(16),
+              SizedBox(height: 16),
               MyButton.text(
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).push(

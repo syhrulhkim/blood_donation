@@ -245,10 +245,10 @@ class _NewsAddState extends State<NewsAdd> {
       CampaignAPI().addCampaignWithUsers(newCampaign,selectedUsers);
 
       // navigate to add page if succeed
-      // Navigator.of(context, rootNavigator: true).push(
-      //   MaterialPageRoute(
-      //       builder: (context) => News()),
-      // );
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+            builder: (context) => News()),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

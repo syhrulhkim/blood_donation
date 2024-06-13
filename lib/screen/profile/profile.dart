@@ -4,6 +4,7 @@ import 'package:blood_donation/api/user_api.dart';
 import 'package:blood_donation/auth/login.dart';
 import 'package:blood_donation/models/user.dart';
 import 'package:blood_donation/screen/profile/profile_edit.dart';
+import 'package:blood_donation/screen/profile/profile_password.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_button.dart';
 import 'package:blood_donation/widgets/my_container.dart';
@@ -122,72 +123,7 @@ class _ProfileState extends State<Profile> {
         body: ListView(
           padding: MySpacing.fromLTRB(24, 52, 24, 24),
           children: [
-            Center(
-              child: MyContainer(
-                paddingAll: 0,
-                borderRadiusAll: 24,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(24),
-                  ),
-                  child: Image(
-                    fit: BoxFit.cover,
-                    width: 100,
-                    height: 100,
-                    image: AssetImage('assets/images/profile/avatar_4.jpg'),
-                  ),
-                ),
-              ),
-            ),
-            MySpacing.height(24),
-            MyText.titleLarge(
-              'Loading ..',
-              textAlign: TextAlign.center,
-              fontWeight: 600,
-              letterSpacing: 0.8,
-            ),
-            MySpacing.height(4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                MyContainer.rounded(
-                  color: customTheme.medicarePrimary,
-                  height: 6,
-                  width: 6,
-                  child: Container(),
-                ),
-                MySpacing.width(6),
-                MyText.bodySmall(
-                  'Online',
-                  color: customTheme.medicarePrimary,
-                  muted: true,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-            MySpacing.height(24),
-            MyText.bodySmall(
-              'General',
-              color: theme.colorScheme.onBackground,
-              xMuted: true,
-            ),
-            MySpacing.height(8),
-            _buildSingleRow(title: 'Profile settings', icon: LucideIcons.user),
-            MySpacing.height(8),
-            Divider(),
-            // MySpacing.height(8),
-            // _buildSingleRow(title: 'Password', icon: LucideIcons.lock),
-            // MySpacing.height(8),
-            Divider(),
-            MySpacing.height(8),
-            Container(
-              child: GestureDetector(
-                onTap: () {
-                  _logOut();
-                },
-                child: _buildSingleRow(title: 'Logout', icon: LucideIcons.logOut),
-              )
-            ),
+            CircularProgressIndicator(),
           ],
         ),
       );
@@ -259,11 +195,22 @@ class _ProfileState extends State<Profile> {
               )
             ),
             MySpacing.height(8),
-            // Divider(),
-            // MySpacing.height(8),
+            Divider(),
+            MySpacing.height(8),
+            Container(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(
+                        builder: (context) => ChangePassword()),
+                  );
+                },
+                child: _buildSingleRow(title: 'Password', icon: LucideIcons.lock),
+              )
+            ),
             // _buildSingleRow(title: 'Password', icon: LucideIcons.lock),
-            // MySpacing.height(8),
-            // Divider(),
+            MySpacing.height(8),
+            Divider(),
             MySpacing.height(8),
             Container(
               child: GestureDetector(
