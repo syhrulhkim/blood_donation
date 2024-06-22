@@ -1,14 +1,16 @@
+import 'package:blood_donation/api/main_api.dart';
 import 'package:blood_donation/auth/nonuser.dart';
-import 'package:blood_donation/models/category.dart';
-import 'package:blood_donation/models/doctor.dart';
+import 'package:blood_donation/models/hospital.dart';
+import 'package:blood_donation/models/user.dart';
+import 'package:blood_donation/screen/mainpage/hospital/hospital_details.dart';
 import 'package:blood_donation/screen/mainpage/notification/notification_list.dart';
-// import 'package:flutkit/full_apps/other/medicare/single_doctor_screen.dart';
+import 'package:blood_donation/widgets/my_bottom_navigation_bar.dart';
+import 'package:blood_donation/widgets/my_bottom_navigation_bar_item.dart';
+import 'package:intl/intl.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_container.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
-import 'package:blood_donation/widgets/my_star_rating.dart';
 import 'package:blood_donation/widgets/my_text.dart';
-import 'package:blood_donation/widgets/my_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -21,140 +23,143 @@ class MainGuest extends StatefulWidget {
 
 class _MainGuestState extends State<MainGuest> {
   int selectedCategory = 0;
-  List<Category> categoryList = [];
-  List<Doctor> doctorList = [];
   late ThemeData theme;
   late CustomTheme customTheme;
+  List<Hospital> hospitalList = [];
+  List<UserNotification> readNotifications = [];
+  List<UserNotification> unreadNotifications = [];
 
   @override
   void initState() {
     super.initState();
     theme = AppTheme.theme;
     customTheme = AppTheme.customTheme;
-    categoryList = Category.categoryList();
-    doctorList = Doctor.doctorList();
+    _buildHospitalList();
+  }
+
+  _buildHospitalList() async {
+    MainAPI mainAPI = MainAPI();
+    List<Hospital> list = await mainAPI.allHospital();
+    setState(() {
+      hospitalList = list;
+    });
+  }
+
+  Widget _buildAllHospital() {
+    if (hospitalList.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      return Column(
+        children: List.generate(hospitalList.length, (index) {
+          final hospList = hospitalList[index];
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+            child: MyContainer(
+              onTap: () {
+                // Handle onTap event if needed
+              },
+              paddingAll: 16,
+              borderRadiusAll: 8,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: SizedBox(
+                      width: 72,
+                      height: 72,
+                      child: hospList.hospitalImage.isNotEmpty
+                          ? Image.network(
+                              hospList.hospitalImage,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              color: Colors.grey[200],
+                              child: Icon(Icons.image, color: Colors.grey),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MyText.bodyLarge(
+                          hospList.hospitalName,
+                          fontWeight: 600,
+                        ),
+                        MySpacing.height(4),
+                        MyText.bodySmall(
+                          hospList.hospitalAddress,
+                          maxLines: 1,
+                          xMuted: true,
+                        ),
+                        MySpacing.height(12),
+                        MyText.bodySmall(
+                          '${hospList.hospitalContact}',
+                          xMuted: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+      );
+    }
   }
   
-  Widget _buildSingleCategory(
-      {int? index, String? categoryName, IconData? categoryIcon}) {
-    return Padding(
-      padding: MySpacing.right(16),
-      child: MyContainer(
-        paddingAll: 8,
-        borderRadiusAll: 8,
-        bordered: true,
-        border: Border.all(color: customTheme.border, width: 1),
-        color: selectedCategory == index
-            ? customTheme.card
-            : theme.scaffoldBackgroundColor,
-        onTap: () {
-          setState(() {
-            selectedCategory = index!;
-          });
-        },
-        child: Row(
-          children: [
-            MyContainer.rounded(
-              color: theme.colorScheme.onBackground.withAlpha(16),
-              paddingAll: 4,
-              child: Icon(
-                categoryIcon,
-                color: customTheme.medicarePrimary,
-                size: 16,
-              ),
-            ),
-            MySpacing.width(8),
-            MyText.labelMedium(
-              categoryName!,
-              fontWeight: 600,
-            ),
-          ],
-        ),
-      ),
-    );
+  String capitalize(String s) {
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1);
   }
 
-  List<Widget> _buildCategoryList() {
-    List<Widget> list = [];
-
-    list.add(MySpacing.width(24));
-
-    for (int i = 0; i < categoryList.length; i++) {
-      list.add(_buildSingleCategory(
-          index: i,
-          categoryName: categoryList[i].category,
-          categoryIcon: categoryList[i].categoryIcon));
-    }
-    return list;
-  }
-
-  List<Widget> _buildDoctorList() {
-    List<Widget> list = [];
-
-    list.add(MySpacing.width(16));
-
-    for (int i = 0; i < doctorList.length; i++) {
-      list.add(_buildSingleDoctor(doctorList[i]));
-    }
-    return list;
-  }
-
-  Widget _buildSingleDoctor(Doctor doctor) {
+  Widget donateAvailability() {
     return MyContainer(
-      onTap: () {
-        // Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-        //     builder: (context) => MediCareSingleDoctorScreen(doctor)));
-      },
-      margin: MySpacing.fromLTRB(24, 0, 24, 16),
-      paddingAll: 16,
       borderRadiusAll: 8,
-      child: Row(
+      margin: MySpacing.horizontal(24),
+      color: Colors.green[400],
+      child: Column(
         children: [
-          MyContainer(
-            paddingAll: 0,
-            borderRadiusAll: 8,
-            child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-              child: Image(
-                width: 72,
-                height: 72,
-                image: AssetImage(doctor.image),
-              ),
-            ),
-          ),
-          MySpacing.width(16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                MyText.bodyLarge(
-                  doctor.name,
-                  fontWeight: 600,
-                ),
-                MySpacing.height(4),
-                MyText.bodySmall(
-                  doctor.category,
-                  xMuted: true,
-                ),
-                MySpacing.height(12),
-                Row(
-                  children: [
-                    MyStarRating(
-                      rating: doctor.ratings,
-                      showInactive: true,
-                      size: 15,
-                      inactiveColor:
-                          theme.colorScheme.onBackground.withAlpha(180),
+          Row(
+            children: [
+              const MyContainer(
+                paddingAll: 0,
+                borderRadiusAll: 8,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                  child: Image(
+                    height: 40,
+                    width: 40,
+                    image: AssetImage(
+                      'assets/images/profile/avatar_3.jpg',
                     ),
-                    MySpacing.width(4),
+                  ),
+                ),
+              ),
+              MySpacing.width(16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     MyText.bodySmall(
-                      '${doctor.ratings} | ${doctor.reviews} Reviews',
-                      xMuted: true,
+                      'Guest',
+                      color: customTheme.medicareOnPrimary,
+                      fontWeight: 700,
+                    ),
+                    MyText.bodySmall(
+                      'Available to donate',
+                      fontSize: 10,
+                      color: customTheme.medicareOnPrimary.withAlpha(200),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
@@ -191,7 +196,7 @@ class _MainGuestState extends State<MainGuest> {
                         ),
                         MySpacing.width(4),
                         MyText.bodySmall(
-                          'Semarang, INA',
+                          'Malaysia',
                           color: theme.colorScheme.onBackground,
                           fontWeight: 600,
                         ),
@@ -202,7 +207,7 @@ class _MainGuestState extends State<MainGuest> {
                 MyContainer(
                   onTap: () {
                     Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-                        builder: (context) => NonUser()));
+                        builder: (context) => NotificationList()));
                   },
                   paddingAll: 4,
                   borderRadiusAll: 4,
@@ -215,6 +220,7 @@ class _MainGuestState extends State<MainGuest> {
                         size: 20,
                         color: theme.colorScheme.onBackground.withAlpha(200),
                       ),
+                      if(unreadNotifications.length > 0)
                       Positioned(
                         right: 2,
                         top: 2,
@@ -223,152 +229,6 @@ class _MainGuestState extends State<MainGuest> {
                           color: customTheme.medicarePrimary,
                           child: Container(),
                         ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          MySpacing.height(24),
-          Padding(
-            padding: MySpacing.horizontal(24),
-            child: TextFormField(
-              decoration: InputDecoration(
-                filled: true,
-                labelText: "Search a doctor or health issue",
-                hintText: "Search a doctor or health issue",
-                labelStyle: MyTextStyle.getStyle(
-                    color: customTheme.medicarePrimary,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    muted: true),
-                hintStyle: MyTextStyle.getStyle(
-                    color: customTheme.medicarePrimary,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    muted: true),
-                fillColor: customTheme.card,
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                contentPadding: MySpacing.all(16),
-                prefixIcon: Icon(
-                  LucideIcons.search,
-                  size: 20,
-                ),
-                prefixIconColor: customTheme.medicarePrimary,
-                focusColor: customTheme.medicarePrimary,
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-              ),
-              cursorColor: customTheme.medicarePrimary,
-              autofocus: false,
-            ),
-          ),
-          MySpacing.height(24),
-          Padding(
-            padding: MySpacing.horizontal(24),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                MyText.bodyMedium(
-                  'Guest Dashboard',
-                  fontWeight: 700,
-                ),
-                MyText.bodySmall(
-                  'See all',
-                  color: customTheme.medicarePrimary,
-                  fontSize: 10,
-                ),
-              ],
-            ),
-          ),
-          MySpacing.height(24),
-          MyContainer(
-            borderRadiusAll: 8,
-            margin: MySpacing.horizontal(24),
-            color: customTheme.medicarePrimary,
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    MyContainer(
-                      paddingAll: 0,
-                      borderRadiusAll: 8,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        child: Image(
-                          height: 40,
-                          width: 40,
-                          image: AssetImage(
-                            'assets/images/profile/avatar_3.jpg',
-                          ),
-                        ),
-                      ),
-                    ),
-                    MySpacing.width(16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          MyText.bodySmall(
-                            'Dr.Haley lawrence',
-                            color: customTheme.medicareOnPrimary,
-                            fontWeight: 700,
-                          ),
-                          MyText.bodySmall(
-                            'Dermatologists',
-                            fontSize: 10,
-                            color: customTheme.medicareOnPrimary.withAlpha(200),
-                          ),
-                        ],
-                      ),
-                    ),
-                    MySpacing.width(16),
-                    MyContainer.rounded(
-                      paddingAll: 4,
-                      color: customTheme.medicareOnPrimary,
-                      child: Icon(
-                        Icons.videocam_outlined,
-                        color: customTheme.medicarePrimary,
-                        size: 16,
-                      ),
-                    ),
-                  ],
-                ),
-                MySpacing.height(16),
-                MyContainer(
-                  borderRadiusAll: 8,
-                  color: theme.colorScheme.onBackground.withAlpha(30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.watch_later,
-                        color: customTheme.medicareOnPrimary.withAlpha(160),
-                        size: 20,
-                      ),
-                      MySpacing.width(8),
-                      MyText.bodySmall(
-                        'Sun, Jan 19, 08:00am - 10:00am',
-                        color: customTheme.medicareOnPrimary,
                       ),
                     ],
                   ),
@@ -383,27 +243,68 @@ class _MainGuestState extends State<MainGuest> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 MyText.bodyMedium(
-                  'Let\'s find your doctor',
+                  'Dashboard',
                   fontWeight: 700,
                 ),
-                Icon(
-                  Icons.tune_outlined,
-                  color: customTheme.medicarePrimary,
-                  size: 20,
-                ),
               ],
-            ),
-          ),
-          MySpacing.height(24),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: _buildCategoryList(),
             ),
           ),
           MySpacing.height(16),
-          Column(
-            children: _buildDoctorList(),
+          donateAvailability(),
+          MySpacing.height(24),
+          Padding(
+            padding: MySpacing.horizontal(24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                MyText.bodyMedium(
+                  'Find your nearest hospital',
+                  fontWeight: 700,
+                ),
+              ],
+            ),
+          ),
+          MySpacing.height(16),
+          _buildAllHospital(),
+          MyBottomNavigationBar(
+            containerDecoration: BoxDecoration(
+              color: customTheme.card,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16)),
+            ),
+            activeContainerColor:
+                customTheme.medicarePrimary.withAlpha(30),
+            myBottomNavigationBarType:
+                MyBottomNavigationBarType.containered,
+            showActiveLabel: false,
+            showLabel: false,
+            activeIconSize: 24,
+            iconSize: 24,
+            activeIconColor: customTheme.medicarePrimary,
+            iconColor: theme.colorScheme.onBackground.withAlpha(140),
+            itemList: [
+              MyBottomNavigationBarItem(
+                page: MainGuest(),
+                activeIconData: LucideIcons.home,
+                iconData: LucideIcons.home,
+              ),
+              MyBottomNavigationBarItem(
+                page: NonUser(),
+                activeIconData: LucideIcons.calendarDays,
+                iconData: LucideIcons.calendarDays,
+              ),
+              MyBottomNavigationBarItem(
+                page: NonUser(),
+                activeIconData: LucideIcons.history,
+                iconData: LucideIcons.history,
+              ),
+              MyBottomNavigationBarItem(
+                page: NonUser(),
+                activeIconData: LucideIcons.user,
+                iconData: LucideIcons.user,
+              ),
+            ],
           ),
         ],
       ),

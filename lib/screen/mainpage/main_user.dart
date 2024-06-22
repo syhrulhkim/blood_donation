@@ -12,7 +12,6 @@ import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_container.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
 import 'package:blood_donation/widgets/my_text.dart';
-import 'package:blood_donation/widgets/my_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';

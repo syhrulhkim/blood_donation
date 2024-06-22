@@ -7,6 +7,7 @@ import 'package:blood_donation/api/firebase_api.dart';
 import 'package:blood_donation/api/login_api.dart';
 import 'package:blood_donation/auth/forgotpassword.dart';
 import 'package:blood_donation/auth/signup.dart';
+import 'package:blood_donation/screen/mainpage/main_guest.dart';
 // import 'package:blood_donation/screen/home/home.dart';
 import 'package:blood_donation/screen/mainpage/mainpage.dart';
 import 'package:blood_donation/theme/app_theme.dart';
@@ -245,9 +246,29 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   _submitForm();
                 },
-                backgroundColor: customTheme.medicarePrimary,
+                backgroundColor: customTheme.datingSecondary,
                 child: MyText.labelMedium(
                   "LOG IN",
+                  fontWeight: 700,
+                  color: customTheme.medicareOnPrimary,
+                  letterSpacing: 0.4,
+                ),
+              ),
+              SizedBox(height: 8),
+              MyButton.block(
+                borderRadiusAll: 8,
+                elevation: 0,
+                padding: MySpacing.y(20),
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            MainGuest()),
+                  );
+                },
+                backgroundColor: customTheme.medicarePrimary,
+                child: MyText.labelMedium(
+                  "GUEST",
                   fontWeight: 700,
                   color: customTheme.medicareOnPrimary,
                   letterSpacing: 0.4,

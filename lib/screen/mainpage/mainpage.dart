@@ -53,6 +53,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   checkingRole(roles) {
+    print("roles :${roles}");
     switch (roles) {
       case "admin":
         items.addAll([
