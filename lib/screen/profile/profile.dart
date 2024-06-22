@@ -120,11 +120,13 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     if (isLoadingUser) {
       return Scaffold(
-        body: ListView(
-          padding: MySpacing.fromLTRB(24, 52, 24, 24),
-          children: [
-            CircularProgressIndicator(),
-          ],
+        body: Center(
+          child: Container(
+            padding: EdgeInsets.all(24),
+            child: CircularProgressIndicator(
+              strokeWidth: 2, // Adjust the thickness of the circle
+            ),
+          ),
         ),
       );
     } else {
