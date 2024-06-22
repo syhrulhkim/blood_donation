@@ -27,6 +27,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _passwordVisible = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -59,216 +60,230 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
+  // Regular expression for password validation
+  final String passwordPattern = r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
+
+  // Password validator function
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter a password';
+    } else if (!RegExp(passwordPattern).hasMatch(value)) {
+      return 'Password must be at least 8 characters long, contain at least one uppercase letter, and one number';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: MySpacing.horizontal(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextFormField(
-              controller: nameController,
-              decoration: InputDecoration(
-                filled: true,
-                labelText: "Name",
-                hintText: "Name",
-                labelStyle: MyTextStyle.getStyle(
-                  color: customTheme.medicarePrimary,
-                  fontSize: 14,
-                  fontWeight: 600,
+        child: Center(
+          child: SingleChildScrollView(
+            child: IntrinsicHeight(
+              child: Form(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.always, // Always show validation messages
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        filled: true,
+                        labelText: "Name",
+                        hintText: "Name",
+                        labelStyle: MyTextStyle.getStyle(
+                          color: customTheme.medicarePrimary,
+                          fontSize: 14,
+                          fontWeight: 600,
+                        ),
+                        hintStyle: MyTextStyle.getStyle(
+                          color: customTheme.medicarePrimary,
+                          fontSize: 14,
+                          fontWeight: 600,
+                        ),
+                        fillColor: customTheme.medicarePrimary.withAlpha(50),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide.none,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide.none,
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide.none,
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: MySpacing.all(16),
+                        prefixIcon: Icon(
+                          LucideIcons.user,
+                          size: 20,
+                        ),
+                        prefixIconColor: customTheme.medicarePrimary,
+                        focusColor: customTheme.medicarePrimary,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                      ),
+                      cursorColor: customTheme.medicarePrimary,
+                      autofocus: true,
+                    ),
+                    MySpacing.height(24),
+                    TextFormField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        filled: true,
+                        labelText: "Email Address",
+                        hintText: "Email Address",
+                        labelStyle: MyTextStyle.getStyle(
+                          color: customTheme.medicarePrimary,
+                          fontSize: 14,
+                          fontWeight: 600,
+                        ),
+                        hintStyle: MyTextStyle.getStyle(
+                          color: customTheme.medicarePrimary,
+                          fontSize: 14,
+                          fontWeight: 600,
+                        ),
+                        fillColor: customTheme.medicarePrimary.withAlpha(50),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide.none,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide.none,
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide.none,
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: MySpacing.all(16),
+                        prefixIcon: Icon(
+                          LucideIcons.mail,
+                          size: 20,
+                        ),
+                        prefixIconColor: customTheme.medicarePrimary,
+                        focusColor: customTheme.medicarePrimary,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                      ),
+                      cursorColor: customTheme.medicarePrimary,
+                      autofocus: true,
+                    ),
+                    MySpacing.height(24),
+                    TextFormField(
+                      controller: passwordController,
+                      obscureText: !_passwordVisible, // Hides the password
+                      validator: _validatePassword, // Add the validator
+                      decoration: InputDecoration(
+                        filled: true,
+                        labelText: "Password",
+                        hintText: "Password",
+                        labelStyle: MyTextStyle.getStyle(
+                          color: customTheme.medicarePrimary,
+                          fontSize: 14,
+                          fontWeight: 600,
+                        ),
+                        hintStyle: MyTextStyle.getStyle(
+                          color: customTheme.medicarePrimary,
+                          fontSize: 14,
+                          fontWeight: 600,
+                        ),
+                        fillColor: customTheme.medicarePrimary.withAlpha(50),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide.none,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide.none,
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide.none,
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: MySpacing.all(16),
+                        prefixIcon: Icon(
+                          LucideIcons.lock,
+                          size: 20,
+                        ),
+                        prefixIconColor: customTheme.medicarePrimary,
+                        focusColor: customTheme.medicarePrimary,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                            color: Theme.of(context).dividerColor,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _passwordVisible = !_passwordVisible;
+                            });
+                          },
+                        ),
+                      ),
+                      cursorColor: customTheme.medicarePrimary,
+                      autofocus: true,
+                    ),
+                    MySpacing.height(16),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: MyButton.text(
+                        padding: MySpacing.zero,
+                        onPressed: () {
+                          Navigator.of(context, rootNavigator: true).push(
+                            MaterialPageRoute(builder: (context) => ForgotPassword()),
+                          );
+                        },
+                        splashColor: customTheme.medicarePrimary.withAlpha(40),
+                        child: MyText.bodySmall("Forgot Password?",
+                            color: customTheme.medicarePrimary)),
+                    ),
+                    MySpacing.height(16),
+                    MyButton.block(
+                      borderRadiusAll: 8,
+                      elevation: 0,
+                      padding: MySpacing.y(20),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          signUp(nameController.text, emailController.text, passwordController.text);
+                        }
+                      },
+                      backgroundColor: customTheme.medicarePrimary,
+                      child: MyText.bodyLarge(
+                        "Create an Account",
+                        color: customTheme.medicareOnPrimary,
+                      )
+                    ),
+                    MySpacing.height(16),
+                    MyButton.text(
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      },
+                      splashColor: customTheme.medicarePrimary.withAlpha(40),
+                      child: MyText.bodySmall("I have already an account",
+                        decoration: TextDecoration.underline,
+                        color: customTheme.medicarePrimary)
+                    ),
+                  ],
                 ),
-                hintStyle: MyTextStyle.getStyle(
-                  color: customTheme.medicarePrimary,
-                  fontSize: 14,
-                  fontWeight: 600,
-                ),
-                fillColor: customTheme.medicarePrimary.withAlpha(50),
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                contentPadding: MySpacing.all(16),
-                prefixIcon: Icon(
-                  LucideIcons.user,
-                  size: 20,
-                ),
-                prefixIconColor: customTheme.medicarePrimary,
-                focusColor: customTheme.medicarePrimary,
-                floatingLabelBehavior: FloatingLabelBehavior.never,
               ),
-              cursorColor: customTheme.medicarePrimary,
-              autofocus: true,
             ),
-            MySpacing.height(24),
-            TextFormField(
-              controller: emailController,
-              decoration: InputDecoration(
-                filled: true,
-                labelText: "Email Address",
-                hintText: "Email Address",
-                labelStyle: MyTextStyle.getStyle(
-                  color: customTheme.medicarePrimary,
-                  fontSize: 14,
-                  fontWeight: 600,
-                ),
-                hintStyle: MyTextStyle.getStyle(
-                  color: customTheme.medicarePrimary,
-                  fontSize: 14,
-                  fontWeight: 600,
-                ),
-                fillColor: customTheme.medicarePrimary.withAlpha(50),
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                contentPadding: MySpacing.all(16),
-                prefixIcon: Icon(
-                  LucideIcons.mail,
-                  size: 20,
-                ),
-                prefixIconColor: customTheme.medicarePrimary,
-                focusColor: customTheme.medicarePrimary,
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-              ),
-              cursorColor: customTheme.medicarePrimary,
-              autofocus: true,
-            ),
-            MySpacing.height(24),
-            TextFormField(
-              controller: passwordController,
-              obscureText: !_passwordVisible, // Hides the password
-              decoration: InputDecoration(
-                filled: true,
-                labelText: "Password",
-                hintText: "Password",
-                labelStyle: MyTextStyle.getStyle(
-                  color: customTheme.medicarePrimary,
-                  fontSize: 14,
-                  fontWeight: 600,
-                ),
-                hintStyle: MyTextStyle.getStyle(
-                  color: customTheme.medicarePrimary,
-                  fontSize: 14,
-                  fontWeight: 600,
-                ),
-                fillColor: customTheme.medicarePrimary.withAlpha(50),
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                    borderSide: BorderSide.none),
-                contentPadding: MySpacing.all(16),
-                prefixIcon: Icon(
-                  LucideIcons.lock,
-                  size: 20,
-                ),
-                prefixIconColor: customTheme.medicarePrimary,
-                focusColor: customTheme.medicarePrimary,
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                    color: Theme.of(context).dividerColor,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _passwordVisible = !_passwordVisible;
-                    });
-                  },
-                ),
-              ),
-              cursorColor: customTheme.medicarePrimary,
-              autofocus: true,
-            ),
-            MySpacing.height(16),
-            Align(
-              alignment: Alignment.centerRight,
-              child: MyButton.text(
-                  padding: MySpacing.zero,
-                  onPressed: () {
-                    Navigator.of(context, rootNavigator: true).push(
-                      MaterialPageRoute(
-                          builder: (context) => ForgotPassword()),
-                    );
-                  },
-                  splashColor: customTheme.medicarePrimary.withAlpha(40),
-                  child: MyText.bodySmall("Forgot Password?",
-                      color: customTheme.medicarePrimary)),
-            ),
-            MySpacing.height(16),
-            MyButton.block(
-                borderRadiusAll: 8,
-                elevation: 0,
-                padding: MySpacing.y(20),
-                onPressed: () {
-                  signUp(nameController.text, emailController.text, passwordController.text);
-                },
-                backgroundColor: customTheme.medicarePrimary,
-                child: MyText.bodyLarge(
-                  "Create an Account",
-                  color: customTheme.medicareOnPrimary,
-                )),
-            MySpacing.height(16),
-            MyButton.text(
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).push(
-                    MaterialPageRoute(
-                        builder: (context) => LoginPage()),
-                  );
-                },
-                splashColor: customTheme.medicarePrimary.withAlpha(40),
-                child: MyText.bodySmall("I have already an account",
-                    decoration: TextDecoration.underline,
-                    color: customTheme.medicarePrimary)),
-          ],
+          ),
         ),
       ),
     );

@@ -191,12 +191,6 @@ class _BookingState extends State<BookingUser> {
         backgroundColor: theme.scaffoldBackgroundColor,
         automaticallyImplyLeading: false,
         actions: [
-          Icon(
-            Icons.more_horiz,
-            color: theme.colorScheme.onBackground,
-            size: 24,
-          ),
-          MySpacing.width(24)
         ],
       ),
       body: Padding(

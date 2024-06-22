@@ -144,7 +144,7 @@ class _ProfileState extends State<Profile> {
                     fit: BoxFit.cover,
                     width: 100,
                     height: 100,
-                    image: AssetImage('assets/images/profile/avatar_3.jpg'),
+                    image: AssetImage('assets/images/profile/user.png'),
                   ),
                 ),
               ),

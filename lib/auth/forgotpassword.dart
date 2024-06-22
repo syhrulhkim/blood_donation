@@ -126,7 +126,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               },
               splashColor: customTheme.medicarePrimary.withAlpha(40),
               child: MyText.bodySmall(
-                "I haven't an account",
+                "I dont have an account",
                 decoration: TextDecoration.underline,
                 color: customTheme.medicarePrimary,
               ),

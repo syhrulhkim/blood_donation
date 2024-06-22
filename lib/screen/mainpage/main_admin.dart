@@ -184,7 +184,7 @@ class _MainAdminState extends State<MainAdmin> {
                         height: 40,
                         width: 40,
                         image: AssetImage(
-                          'assets/images/profile/avatar_3.jpg',
+                          'assets/images/profile/admin.png',
                         ),
                       ),
                     ),
@@ -241,7 +241,7 @@ class _MainAdminState extends State<MainAdmin> {
                         height: 40,
                         width: 40,
                         image: AssetImage(
-                          'assets/images/profile/avatar_3.jpg',
+                          'assets/images/profile/admin.png',
                         ),
                       ),
                     ),
