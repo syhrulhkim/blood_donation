@@ -50,14 +50,14 @@ class _ProfileEditState extends State<ProfileEdit> {
     selectedGender = "";
     selectedStatusPregnant = "";
     selectedBloodType = "";
-    _nameController = TextEditingController();
-    _contactController = TextEditingController();
-    _emailController = TextEditingController();
-    _addressController = TextEditingController();
-    _poscodeController = TextEditingController();
-    _dateController = TextEditingController();
-    _heightController = TextEditingController();
-    _weightController = TextEditingController();
+    _nameController = TextEditingController(text: userData.donorName);
+    _contactController = TextEditingController(text: userData.donorContact);
+    _emailController = TextEditingController(text: userData.donorEmail);
+    _addressController = TextEditingController(text: userData.donorAddress);
+    _poscodeController = TextEditingController(text: userData.donorPostcode);
+    _dateController = TextEditingController(text: userData.donorDOB);
+    _heightController = TextEditingController(text: userData.donorHeight);
+    _weightController = TextEditingController(text: userData.donorWeight);
     _getUser();
   }
 
@@ -154,7 +154,6 @@ class _ProfileEditState extends State<ProfileEdit> {
     }
   }
 
-
   Widget selectGender() {
     List<String> options = ['Male', 'Female'];
     return Padding(
@@ -247,10 +246,10 @@ class _ProfileEditState extends State<ProfileEdit> {
     );
   }
 
-  Widget selectBloodType() {
+   Widget selectBloodType() {
     List<String> options = ['A+', 'A-', 'AB+', 'AB-', 'B+', 'B-', 'O+', 'O-'];
     return Padding(
-      padding: EdgeInsets.fromLTRB(0,5,0,5),
+      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
       child: Container(
         decoration: const BoxDecoration(
           border: Border(
@@ -260,7 +259,7 @@ class _ProfileEditState extends State<ProfileEdit> {
             ),
           ),
         ),
-        padding: EdgeInsets.fromLTRB(10,5,10,5),
+        padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
             hint: Text(
@@ -344,14 +343,13 @@ class _ProfileEditState extends State<ProfileEdit> {
                   child: ListView(
                     children: [
                       Container(
-                        padding: EdgeInsets.only(
-                            left: 0, right: 20, top: 0, bottom: 12),
+                        padding: EdgeInsets.only(left: 0, right: 20, top: 0, bottom: 12),
                         child: MyText.titleMedium("Edit User Profile", fontWeight: 600),
                       ),
                       TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
-                          labelText: "${userData.donorName}",
+                          labelText: "User Name",
                           border: theme.inputDecorationTheme.border,
                           enabledBorder: theme.inputDecorationTheme.border,
                           focusedBorder: theme.inputDecorationTheme.focusedBorder,
@@ -383,7 +381,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                       TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
-                          labelText: "${userData.donorEmail}",
+                          labelText: "User Email",
                           border: theme.inputDecorationTheme.border,
                           enabledBorder: theme.inputDecorationTheme.border,
                           focusedBorder: theme.inputDecorationTheme.focusedBorder,
@@ -430,7 +428,10 @@ class _ProfileEditState extends State<ProfileEdit> {
                       ),
                       TextFormField(
                         controller: _dateController,
-                        readOnly: true, // Prevents keyboard from appearing
+                        readOnly: true,
+                        onTap: () async {
+                          await _selectDate(context);
+                        },
                         decoration: InputDecoration(
                           labelText: "User Date of Birth",
                           border: theme.inputDecorationTheme.border,
@@ -438,9 +439,6 @@ class _ProfileEditState extends State<ProfileEdit> {
                           focusedBorder: theme.inputDecorationTheme.focusedBorder,
                           prefixIcon: Icon(Icons.calendar_today, size: 24),
                         ),
-                        onTap: () async {
-                          await _selectDate(context);
-                        },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter user date of birth';
@@ -459,7 +457,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter user gender';
+                            return 'Please enter user height';
                           }
                           return null;
                         },
@@ -475,7 +473,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter user gender';
+                            return 'Please enter user weight';
                           }
                           return null;
                         },
@@ -503,8 +501,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                 ),
               ),
             ),
-          )
-        ]
+          ),
+        ],
       ),
     );
   }
