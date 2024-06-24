@@ -59,6 +59,14 @@ class _MainUserState extends State<MainUser> {
       var fetchedUserData = await UserAPI().getUserData(userId);
 
       if(fetchedUserData != null) {
+        DateTime latestDonateDate = DateTime.parse(fetchedUserData['donor_LatestDonate']);
+        DateTime threeMonthsAgo = DateTime.now().subtract(Duration(days: 90));
+        
+        if (latestDonateDate.isBefore(threeMonthsAgo)) {
+          await UserAPI().updateUserAvailability(userId, 'available');
+          fetchedUserData['donor_Availability'] = 'available'; // Update local state if needed
+        }
+
         setState(() {
           userData = Users(
             donorID: fetchedUserData['donorID'],
@@ -335,7 +343,7 @@ class _MainUserState extends State<MainUser> {
       );
     } else {
       DateTime dateTime = DateTime.parse(lastDonate.donorLatestDonate.toString());
-      String formattedDate = DateFormat('E, MMM dd, hh:mma').format(dateTime);
+String formattedDate = DateFormat('E, MMM dd, yyyy, hh:mma').format(dateTime);
 
       return Row(
         children: [

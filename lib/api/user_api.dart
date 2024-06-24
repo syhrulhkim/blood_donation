@@ -40,6 +40,18 @@ class UserAPI {
     }
   }
 
+  Future<void> updateUserAvailability(String userId, String availability) async {
+    try {
+      await _db.collection('user').doc(userId).update({
+        'donor_Availability': availability,
+      });
+      print("User availability updated to $availability");
+    } catch (error) {
+      print("Error updating user availability: $error");
+      throw Exception("Failed to update user availability");
+    }
+  }
+
   Future<void> addNotificationToUsers(String userID, String campaignId, UserNotification notification) async {
     try {
       CollectionReference notificationsRef = _db.collection('user').doc(userID).collection('notifications');
