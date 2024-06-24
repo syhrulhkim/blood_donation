@@ -136,7 +136,7 @@ class _MainGuestState extends State<MainGuest> {
                     height: 40,
                     width: 40,
                     image: AssetImage(
-                      'assets/images/profile/avatar_3.jpg',
+                      'assets/images/profile/user.png',
                     ),
                   ),
                 ),
