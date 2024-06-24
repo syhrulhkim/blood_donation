@@ -27,12 +27,13 @@ class _HospitalBookingState extends State<HospitalBooking> {
   late CustomTheme customTheme;
   late int selectedDate = 0;
   late int selectedSlot = 0;
-
+  List<Map<String, dynamic>> bookingList = [];
   late List<MyDateTime> data;
   late List<String> morningSlots;
   late List<String> afternoonSlots;
   late List<String> eveningSlots;
   String selectedTime = '';
+  var isLoadingBooking = true;
 
   @override
   initState() {
@@ -45,6 +46,29 @@ class _HospitalBookingState extends State<HospitalBooking> {
     eveningSlots = Slot.eveningList();
     hospital = widget.hospital;
     user = widget.user;
+    _getUserBooking();
+  }
+
+  _getUserBooking() async {
+    BookingAPI bookingAPI = BookingAPI();
+    var bookingData = await bookingAPI.appointmentListFuture(user.donorID);
+    setState(() {
+      bookingList = bookingData;
+      isLoadingBooking = false;
+      _setDefaultSelectedDate();
+    });
+  }
+
+  void _setDefaultSelectedDate() {
+    for (int i = 0; i < data.length; i++) {
+      DateTime dateTime = DateTime.parse(data[i].date);
+      if (!isDateBooked(dateTime)) {
+        setState(() {
+          selectedDate = i + 1; 
+        });
+        break;
+      }
+    }
   }
 
   List<Widget> _buildDateList() {
@@ -86,25 +110,62 @@ class _HospitalBookingState extends State<HospitalBooking> {
     return list;
   }
 
+  bool isSlotBooked(DateTime date, String time) {
+    return bookingList.any((booking) {
+      DateTime bookedDateTime = DateTime.parse(booking['appointment_Date'].toString());
+      DateTime slotDateTime = _parseTime(date, time);
+      return bookedDateTime == slotDateTime;
+    });
+  }
+
+  bool isDateBooked(DateTime date) {
+    return bookingList.any((booking) {
+      DateTime bookedDate = DateTime.parse(booking['appointment_Date'].toString());
+      return bookedDate.year == date.year &&
+        bookedDate.month == date.month &&
+        bookedDate.day == date.day;
+    });
+  }
+
+  DateTime _parseTime(DateTime date, String time) {
+    List<String> timeParts = time.split(':');
+    int hours = int.parse(timeParts[0]);
+    int minutes = int.parse(timeParts[1].split(' ')[0]);
+    String period = timeParts[1].split(' ')[1];
+
+    if (period.toLowerCase() == 'pm' && hours < 12) {
+      hours += 12;
+    } else if (period.toLowerCase() == 'am' && hours == 12) {
+      hours = 0;
+    }
+    return DateTime(date.year, date.month, date.day, hours, minutes);
+  }
+
   Widget _buildSingleSlot({String? time, int? index}) {
+    if (selectedDate == 0) {
+      return Container();
+    }
+    DateTime selectedDateTime = DateTime.parse(data[selectedDate - 1].date);
+    bool isBooked = isSlotBooked(selectedDateTime, time!);
+
     return InkWell(
-      onTap: () {
+      onTap: isBooked ? null : () {
         setState(() {
           selectedSlot = index!;
-          selectedTime = time!; // Update selectedTime when slot is tapped
+          selectedTime = time;
         });
       },
       child: MyContainer(
-        color: selectedSlot == index
-            ? customTheme.medicarePrimary
-            : customTheme.card,
+        color: isBooked
+            ? Colors.grey
+            : (selectedSlot == index ? customTheme.medicarePrimary : customTheme.card),
         padding: MySpacing.symmetric(vertical: 8, horizontal: 16),
         borderRadiusAll: 4,
         child: MyText.bodySmall(
-          time!,
-          color: selectedSlot == index
-              ? customTheme.medicareOnPrimary
-              : theme.colorScheme.onBackground,
+          time,
+          color: isBooked
+              ? Colors.white
+              : (selectedSlot == index ? customTheme.medicareOnPrimary : theme.colorScheme.onBackground),
         ),
       ),
     );
@@ -148,33 +209,35 @@ class _HospitalBookingState extends State<HospitalBooking> {
   }
 
   Widget _buildSingleDate({DateTime? date, String? day, int? index}) {
+    bool isBooked = isDateBooked(date!);
+
     return InkWell(
-      onTap: () {
+      onTap: isBooked ? null : () {
         setState(() {
-          selectedDate = index! + 1; // Adjust selectedDate to match the index
+          selectedDate = index! + 1;
         });
       },
       child: MyContainer(
         paddingAll: 12,
-        color: selectedDate == index! + 1 // Adjust the comparison
-            ? customTheme.medicarePrimary
-            : Colors.transparent,
+        color: isBooked
+            ? Colors.grey
+            : (selectedDate == index! + 1 ? customTheme.medicarePrimary : Colors.transparent),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             MyText.bodySmall(
               day!,
-              color: selectedDate == index! + 1 // Adjust the comparison
-                  ? customTheme.medicareOnPrimary
-                  : theme.colorScheme.onBackground,
+              color: isBooked
+                  ? Colors.white
+                  : (selectedDate == index! + 1 ? customTheme.medicareOnPrimary : theme.colorScheme.onBackground),
               fontWeight: 800,
             ),
             MySpacing.height(12),
             MyText.bodySmall(
-              formatDate(date!), 
-              color: selectedDate == index! + 1 // Adjust the comparison
-                  ? customTheme.medicareOnPrimary
-                  : theme.colorScheme.onBackground,
+              formatDate(date),
+              color: isBooked
+                  ? Colors.white
+                  : (selectedDate == index! + 1 ? customTheme.medicareOnPrimary : theme.colorScheme.onBackground),
               fontWeight: 700,
             ),
           ],
@@ -182,7 +245,6 @@ class _HospitalBookingState extends State<HospitalBooking> {
       ),
     );
   }
-
   
   void bookAppointment(DateTime selectedDate, String selectedTime) async{
     try {
@@ -227,86 +289,102 @@ class _HospitalBookingState extends State<HospitalBooking> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: customTheme.card,
-        centerTitle: true,
-        leading: InkWell(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Icon(
-              Icons.arrow_back,
-            )),
-        elevation: 0,
-        title: MyText.bodyLarge('Appointment', fontWeight: 700),
-      ),
-      body: Container(
-        color: customTheme.card,
-        child: Column(
-          children: [
-            Container(
-              padding: MySpacing.nRight(16),
-              color: customTheme.card,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: _buildDateList(),
+    print("bookingList : ${bookingList}");
+    if(isLoadingBooking){
+      return Scaffold(
+        body: Center(
+          child: Container(
+            padding: EdgeInsets.all(24),
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: customTheme.card,
+          centerTitle: true,
+          leading: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(
+                Icons.arrow_back,
+              )),
+          elevation: 0,
+          title: MyText.bodyLarge('Appointment', fontWeight: 700),
+        ),
+        body: Container(
+          color: customTheme.card,
+          child: Column(
+            children: [
+              Container(
+                padding: MySpacing.nRight(16),
+                color: customTheme.card,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: _buildDateList(),
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: ListView(
+              Expanded(
+                child: ListView(
+                  padding: MySpacing.all(24),
+                  children: [
+                    MyText('Morning Slots', fontWeight: 800),
+                    MySpacing.height(8),
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 12,
+                      children: _buildMorningSlotList(),
+                    ),
+                    MySpacing.height(32),
+                    MyText('Afternoon Slots', fontWeight: 800),
+                    MySpacing.height(8),
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 12,
+                      children: _buildAfternoonSlotList(),
+                    ),
+                    MySpacing.height(32),
+                    MyText('Evening Slots', fontWeight: 800),
+                    MySpacing.height(8),
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 12,
+                      children: _buildEveningSlotList(),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
                 padding: MySpacing.all(24),
-                children: [
-                  MyText('Morning Slots', fontWeight: 800),
-                  MySpacing.height(8),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 12,
-                    children: _buildMorningSlotList(),
-                  ),
-                  MySpacing.height(32),
-                  MyText('Afternoon Slots', fontWeight: 800),
-                  MySpacing.height(8),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 12,
-                    children: _buildAfternoonSlotList(),
-                  ),
-                  MySpacing.height(32),
-                  MyText('Evening Slots', fontWeight: 800),
-                  MySpacing.height(8),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 12,
-                    children: _buildEveningSlotList(),
-                  ),
-                ],
+                child: MyButton.block(
+                  borderRadiusAll: 8,
+                  elevation: 0,
+                  onPressed: () {
+                    if (selectedDate != 0 && selectedTime.isNotEmpty) {
+                      DateTime selectedDateTime = DateTime.parse(data[selectedDate - 1].date);
+                      bookAppointment(selectedDateTime, selectedTime);
+                    } else {
+                      // Handle case where no date or time is selected
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Please select a date and time')),
+                      );
+                    }
+                  },
+                  backgroundColor: customTheme.medicarePrimary,
+                  child: MyText("Confirm Appointment",
+                      fontWeight: 700, color: customTheme.medicareOnPrimary),
+                ),
               ),
-            ),
-            Padding(
-              padding: MySpacing.all(24),
-              child: MyButton.block(
-                borderRadiusAll: 8,
-                elevation: 0,
-                onPressed: () {
-                  if (selectedDate != 0 && selectedTime.isNotEmpty) {
-                    DateTime selectedDateTime = DateTime.parse(data[selectedDate - 1].date);
-                    bookAppointment(selectedDateTime, selectedTime);
-                  } else {
-                    // Handle case where no date or time is selected
-                    print('Please select a date and time');
-                  }
-                },
-                backgroundColor: customTheme.medicarePrimary,
-                child: MyText("Confirm Appointment",
-                    fontWeight: 700, color: customTheme.medicareOnPrimary),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 }
