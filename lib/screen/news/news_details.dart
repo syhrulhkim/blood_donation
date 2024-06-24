@@ -68,11 +68,21 @@ class _NewDetailsState extends State<NewDetails> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                MyText.bodyLarge(
-                  'News Details',
-                  fontWeight: 600,
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: MyText.bodyLarge(
+                    '${campaign.campaignTitle}',
+                    fontWeight: 600,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                MySpacing.height(10),
+                MySpacing.height(2),
+                MyText.bodyLarge(
+                  '${formatDateTime(campaign.campaignDate)}',
+                  fontWeight: 400,
+                  fontSize: 11,
+                ),
+                MySpacing.height(8),
                 MyContainer(
                   paddingAll: 4,
                   borderRadiusAll: 8,
@@ -82,21 +92,6 @@ class _NewDetailsState extends State<NewDetails> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          MyText.bodyLarge(
-                            '${campaign.campaignTitle}',
-                            fontWeight: 600,
-                          ),
-                          MyText.bodyLarge(
-                            '${formatDateTime(campaign.campaignDate)}',
-                            fontWeight: 400,
-                            fontSize: 11,
-                          ),
-                        ],
-                      ),
-                      MySpacing.height(4),
                       RichText(
                         text: TextSpan(children: <TextSpan>[
                           TextSpan(
