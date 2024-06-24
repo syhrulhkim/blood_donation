@@ -303,7 +303,7 @@ class _MainAdminState extends State<MainAdmin> {
                         ),
                         MySpacing.width(4),
                         MyText.bodySmall(
-                          'Malaysia',
+                          'Terengganu, Malaysia',
                           color: theme.colorScheme.onBackground,
                           fontWeight: 600,
                         ),

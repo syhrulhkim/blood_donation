@@ -196,7 +196,7 @@ class _MainGuestState extends State<MainGuest> {
                         ),
                         MySpacing.width(4),
                         MyText.bodySmall(
-                          'Malaysia',
+                          'Terengganu, Malaysia',
                           color: theme.colorScheme.onBackground,
                           fontWeight: 600,
                         ),

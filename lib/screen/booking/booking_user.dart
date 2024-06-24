@@ -4,11 +4,12 @@ import 'package:blood_donation/api/booking_api.dart';
 import 'package:blood_donation/api/user_api.dart';
 import 'package:blood_donation/models/user.dart';
 import 'package:blood_donation/screen/booking/booking_details.dart';
+import 'package:blood_donation/screen/mainpage/main_user.dart';
 import 'package:blood_donation/theme/app_theme.dart';
+import 'package:blood_donation/widgets/my_button.dart';
 import 'package:blood_donation/widgets/my_container.dart';
 import 'package:blood_donation/widgets/my_spacing.dart';
 import 'package:blood_donation/widgets/my_text.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -75,12 +76,34 @@ class _BookingState extends State<BookingUser> {
   }
 
   _buildAppointmentList() async {
-    BookingAPI bookingAPI = BookingAPI();
-    var user = userData;
-    var bookingData = await bookingAPI.appointmentListFuture(user.donorID);
-    setState(() {
-      bookingList = bookingData;
-    });
+    try {
+      BookingAPI bookingAPI = BookingAPI();
+      var user = userData;
+      var bookingData = await bookingAPI.appointmentListFuture(user.donorID);
+      setState(() {
+        bookingList = bookingData;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${e}')),
+      );
+    }
+  }
+
+  _deleteAppointment(appointmentId) async {
+    try {
+      BookingAPI bookingAPI = BookingAPI();
+      await bookingAPI.deleteAppointment(appointmentId);
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+            builder: (context) =>
+                MainUser()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${e}')),
+      );
+    }
   }
 
   String formatDateString(String dateString) {
@@ -154,6 +177,18 @@ class _BookingState extends State<BookingUser> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
+                        GestureDetector(
+                          onTap: () {
+                            _deleteAppointment(appointment["appointmentID"]);
+                            print("appointment : ${appointment}");
+                            print('Delete button pressed');
+                          },
+                          child: const Icon(
+                            Icons.delete,
+                            size: 20,
+                            color: Color.fromARGB(255, 231, 113, 113),
+                          ),
+                        ),
                         MyText.bodySmall(
                           "${formatDateString((appointment["appointment_Date"]).toString())}",
                           fontSize: 10,

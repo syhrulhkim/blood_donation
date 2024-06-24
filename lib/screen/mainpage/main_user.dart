@@ -389,7 +389,7 @@ class _MainUserState extends State<MainUser> {
                         ),
                         MySpacing.width(4),
                         MyText.bodySmall(
-                          'Malaysia',
+                          'Terengganu, Malaysia',
                           color: theme.colorScheme.onBackground,
                           fontWeight: 600,
                         ),

@@ -215,4 +215,14 @@ class BookingAPI {
       throw Exception("Failed to submit appointment");
     }
   }
+
+  Future<void> deleteAppointment(String appointmentID) async {
+    try {
+      await _db.collection("appointment").doc(appointmentID).delete();
+      print("Appointment with ID $appointmentID deleted successfully");
+    } catch (error) {
+      print("Error deleting appointment: $error");
+      throw Exception("Failed to delete appointment");
+    }
+  }
 }
