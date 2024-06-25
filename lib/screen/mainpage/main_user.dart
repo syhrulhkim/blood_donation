@@ -53,18 +53,25 @@ class _MainUserState extends State<MainUser> {
   _getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userDataJson = prefs.getString('userData');
-    if(userDataJson != null) {
+    if (userDataJson != null) {
       Map<String, dynamic> decodedData = json.decode(userDataJson);
       var userId = decodedData['donorID'];
       var fetchedUserData = await UserAPI().getUserData(userId);
 
-      if(fetchedUserData != null) {
-        DateTime latestDonateDate = DateTime.parse(fetchedUserData['donor_LatestDonate']);
+      if (fetchedUserData != null) {
+        String donorLatestDonate = fetchedUserData['donor_LatestDonate'] ?? '';
         DateTime threeMonthsAgo = DateTime.now().subtract(Duration(days: 90));
-        
-        if (latestDonateDate.isBefore(threeMonthsAgo)) {
-          await UserAPI().updateUserAvailability(userId, 'available');
-          fetchedUserData['donor_Availability'] = 'available'; 
+
+        if (donorLatestDonate.isEmpty) {
+          // Store the user data to shared preferences
+          await prefs.setString('userData', json.encode(fetchedUserData));
+          print("User data stored to shared preferences because donor_LatestDonate is empty.");
+        } else {
+          DateTime latestDonateDate = DateTime.parse(donorLatestDonate);
+          if (latestDonateDate.isBefore(threeMonthsAgo)) {
+            await UserAPI().updateUserAvailability(userId, 'available');
+            fetchedUserData['donor_Availability'] = 'available';
+          }
         }
 
         setState(() {
@@ -89,6 +96,7 @@ class _MainUserState extends State<MainUser> {
             donorFcmToken: fetchedUserData['donor_fcmToken'],
           );
         });
+
         isLoadingUser = false;
         _getNotificationUser(userId);
       } else {

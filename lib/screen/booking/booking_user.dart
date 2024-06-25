@@ -93,7 +93,8 @@ class _BookingState extends State<BookingUser> {
   _deleteAppointment(appointmentId) async {
     try {
       BookingAPI bookingAPI = BookingAPI();
-      await bookingAPI.deleteAppointment(appointmentId);
+      var user = userData;
+      await bookingAPI.deleteAppointment(user.donorID,appointmentId);
       Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
             builder: (context) =>

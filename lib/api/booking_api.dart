@@ -216,9 +216,46 @@ class BookingAPI {
     }
   }
 
-  Future<void> deleteAppointment(String appointmentID) async {
+  Future<void> deleteAppointment(String userId, String appointmentID) async {
     try {
+      // Delete the specified appointment
       await _db.collection("appointment").doc(appointmentID).delete();
+      
+      // Retrieve all appointments for the given user
+      final snapshot = await _db.collection("appointment").where('donorID', isEqualTo: userId).get();
+      print("snapshot : ${snapshot}");
+
+      if (snapshot.docs.isNotEmpty) {
+        final latestAppointment = snapshot.docs.first;
+        final appointmentDate = latestAppointment['appointment_Date'].toDate();
+        final difference = DateTime.now().difference(appointmentDate);
+
+        print("latestAppointment : ${latestAppointment}");
+        print("appointmentDate : ${appointmentDate}");
+        print("difference : ${difference}");
+
+        // Check if the difference is more than 3 months
+        if (difference.inDays > 90) {
+          await _db.collection("user").doc(userId).update({
+            'donor_Availability': 'available',
+          });
+          print("User donorAvailability updated to available");
+        } else {
+          // Update the donorLatestDonate field with the latest donation date
+          await _db.collection("user").doc(userId).update({
+            'donor_LatestDonate': appointmentDate,
+          });
+          print("User donorLatestDonate updated with latest donation date");
+        }
+      } else {
+        // Update the donor_LatestDonate field to an empty string if no donations
+        await _db.collection("user").doc(userId).update({
+          'donor_LatestDonate': '',
+          'donor_Availability': 'available',
+        });
+        print("User has no previous donations, donor_LatestDonate updated to empty string");
+      }
+
       print("Appointment with ID $appointmentID deleted successfully");
     } catch (error) {
       print("Error deleting appointment: $error");
