@@ -258,11 +258,14 @@ class _MainUserState extends State<MainUser> {
               MyContainer(
                 borderRadiusAll: 8,
                 color: theme.colorScheme.onBackground.withAlpha(30),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _donationDate(user),
-                  ],
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _donationDate(user),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -361,12 +364,12 @@ class _MainUserState extends State<MainUser> {
             color: customTheme.medicareOnPrimary.withAlpha(160),
             size: 20,
           ),
-          MySpacing.width(2),
+          MySpacing.width(3),
           MyText.bodySmall(
             'Last Donate :',
             color: customTheme.medicareOnPrimary,
           ),
-          MySpacing.width(2),
+          MySpacing.width(3),
           MyText.bodySmall(
             '${formattedDate}',
             color: customTheme.medicareOnPrimary,
