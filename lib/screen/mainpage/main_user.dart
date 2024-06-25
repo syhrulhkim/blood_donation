@@ -7,6 +7,7 @@ import 'package:blood_donation/models/hospital.dart';
 import 'package:blood_donation/models/user.dart';
 import 'package:blood_donation/screen/mainpage/hospital/hospital_details.dart';
 import 'package:blood_donation/screen/mainpage/notification/notification_list.dart';
+import 'package:blood_donation/widgets/my_bottom_navigation_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/widgets/my_container.dart';
@@ -351,7 +352,7 @@ class _MainUserState extends State<MainUser> {
       );
     } else {
       DateTime dateTime = DateTime.parse(lastDonate.donorLatestDonate.toString());
-String formattedDate = DateFormat('E, MMM dd, yyyy, hh:mma').format(dateTime);
+      String formattedDate = DateFormat('E, MMM dd, yyyy, hh:mma').format(dateTime);
 
       return Row(
         children: [
@@ -360,12 +361,12 @@ String formattedDate = DateFormat('E, MMM dd, yyyy, hh:mma').format(dateTime);
             color: customTheme.medicareOnPrimary.withAlpha(160),
             size: 20,
           ),
-          MySpacing.width(8),
+          MySpacing.width(2),
           MyText.bodySmall(
             'Last Donate :',
             color: customTheme.medicareOnPrimary,
           ),
-          MySpacing.width(8),
+          MySpacing.width(2),
           MyText.bodySmall(
             '${formattedDate}',
             color: customTheme.medicareOnPrimary,
@@ -446,58 +447,6 @@ String formattedDate = DateFormat('E, MMM dd, yyyy, hh:mma').format(dateTime);
             ),
           ),
           MySpacing.height(24),
-          // Padding(
-          //   padding: MySpacing.horizontal(24),
-          //   child: TextFormField(
-          //     decoration: InputDecoration(
-          //       filled: true,
-          //       labelText: "Search a hospital",
-          //       hintText: "Search a hospital",
-          //       labelStyle: MyTextStyle.getStyle(
-          //           color: customTheme.medicarePrimary,
-          //           fontSize: 12,
-          //           fontWeight: 600,
-          //           muted: true),
-          //       hintStyle: MyTextStyle.getStyle(
-          //           color: customTheme.medicarePrimary,
-          //           fontSize: 12,
-          //           fontWeight: 600,
-          //           muted: true),
-          //       fillColor: customTheme.card,
-          //       enabledBorder: const OutlineInputBorder(
-          //           borderRadius: BorderRadius.all(
-          //             Radius.circular(8),
-          //           ),
-          //           borderSide: BorderSide.none),
-          //       border: const OutlineInputBorder(
-          //           borderRadius: BorderRadius.all(
-          //             Radius.circular(8),
-          //           ),
-          //           borderSide: BorderSide.none),
-          //       disabledBorder: const OutlineInputBorder(
-          //           borderRadius: BorderRadius.all(
-          //             Radius.circular(8),
-          //           ),
-          //           borderSide: BorderSide.none),
-          //       errorBorder: const OutlineInputBorder(
-          //           borderRadius: BorderRadius.all(
-          //             Radius.circular(8),
-          //           ),
-          //           borderSide: BorderSide.none),
-          //       contentPadding: MySpacing.all(16),
-          //       prefixIcon: const Icon(
-          //         LucideIcons.search,
-          //         size: 20,
-          //       ),
-          //       prefixIconColor: customTheme.medicarePrimary,
-          //       focusColor: customTheme.medicarePrimary,
-          //       floatingLabelBehavior: FloatingLabelBehavior.never,
-          //     ),
-          //     cursorColor: customTheme.medicarePrimary,
-          //     autofocus: false,
-          //   ),
-          // ),
-          // MySpacing.height(24),
           Padding(
             padding: MySpacing.horizontal(24),
             child: Row(
