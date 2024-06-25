@@ -64,7 +64,7 @@ class _MainUserState extends State<MainUser> {
         
         if (latestDonateDate.isBefore(threeMonthsAgo)) {
           await UserAPI().updateUserAvailability(userId, 'available');
-          fetchedUserData['donor_Availability'] = 'available'; // Update local state if needed
+          fetchedUserData['donor_Availability'] = 'available'; 
         }
 
         setState(() {

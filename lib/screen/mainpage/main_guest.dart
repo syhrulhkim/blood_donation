@@ -196,7 +196,7 @@ class _MainGuestState extends State<MainGuest> {
                         ),
                         MySpacing.width(4),
                         MyText.bodySmall(
-                          'Terengganu, Malaysia',
+                          'Malaysia',
                           color: theme.colorScheme.onBackground,
                           fontWeight: 600,
                         ),
@@ -266,46 +266,6 @@ class _MainGuestState extends State<MainGuest> {
           ),
           MySpacing.height(16),
           _buildAllHospital(),
-          MyBottomNavigationBar(
-            containerDecoration: BoxDecoration(
-              color: customTheme.card,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16)),
-            ),
-            activeContainerColor:
-                customTheme.medicarePrimary.withAlpha(30),
-            myBottomNavigationBarType:
-                MyBottomNavigationBarType.containered,
-            showActiveLabel: false,
-            showLabel: false,
-            activeIconSize: 24,
-            iconSize: 24,
-            activeIconColor: customTheme.medicarePrimary,
-            iconColor: theme.colorScheme.onBackground.withAlpha(140),
-            itemList: [
-              MyBottomNavigationBarItem(
-                page: MainGuest(),
-                activeIconData: LucideIcons.home,
-                iconData: LucideIcons.home,
-              ),
-              MyBottomNavigationBarItem(
-                page: NonUser(),
-                activeIconData: LucideIcons.calendarDays,
-                iconData: LucideIcons.calendarDays,
-              ),
-              MyBottomNavigationBarItem(
-                page: NonUser(),
-                activeIconData: LucideIcons.history,
-                iconData: LucideIcons.history,
-              ),
-              MyBottomNavigationBarItem(
-                page: NonUser(),
-                activeIconData: LucideIcons.user,
-                iconData: LucideIcons.user,
-              ),
-            ],
-          ),
         ],
       ),
     );

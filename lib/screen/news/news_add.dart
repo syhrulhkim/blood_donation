@@ -7,6 +7,7 @@ import 'package:blood_donation/main.dart';
 import 'package:blood_donation/models/campaign.dart';
 import 'package:blood_donation/models/hospital.dart';
 import 'package:blood_donation/models/user.dart';
+import 'package:blood_donation/screen/mainpage/main_admin.dart';
 import 'package:blood_donation/screen/news/news.dart';
 import 'package:blood_donation/theme/app_theme.dart';
 import 'package:blood_donation/theme/custom_theme.dart';
@@ -73,6 +74,8 @@ class _NewsAddState extends State<NewsAdd> {
     _titleController.dispose();
     _descController.dispose();
     super.dispose();
+    _buildHospitalList();
+    _buildUserList();
   }
 
   _buildHospitalList() async {
@@ -152,7 +155,6 @@ class _NewsAddState extends State<NewsAdd> {
         return newUserList;
 
       case "Donate":
-
         var getUserList = userList;
         List<CampaignSendTo> newUserList = [];
         var userTokenList = [];
@@ -247,7 +249,7 @@ class _NewsAddState extends State<NewsAdd> {
       // navigate to add page if succeed
       Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
-            builder: (context) => News()),
+            builder: (context) => MainAdmin()),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

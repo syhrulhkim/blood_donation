@@ -30,11 +30,17 @@ class _NewsState extends State<News> {
   }
 
   _buildCampaignList() async{
-    CampaignAPI campaignAPI = CampaignAPI();
-    List<Campaign> list = await campaignAPI.allCampaign();
-    setState(() {
-      newsList = list;
-    });
+    try {
+      CampaignAPI campaignAPI = CampaignAPI();
+      List<Campaign> list = await campaignAPI.allCampaign();
+      setState(() {
+        newsList = list;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Campaign list empty or error to fetch')),
+      );
+    } 
   }
 
   String extractDay(String dateTimeString) {
