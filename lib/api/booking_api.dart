@@ -243,7 +243,7 @@ class BookingAPI {
         } else {
           // Update the donorLatestDonate field with the latest donation date
           await _db.collection("user").doc(userId).update({
-            'donor_LatestDonate': appointmentDate,
+            'donor_LatestDonate': appointmentDate.toIso8601String(),
           });
           print("User donorLatestDonate updated with latest donation date");
         }
